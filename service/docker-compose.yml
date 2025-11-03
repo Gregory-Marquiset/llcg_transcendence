@@ -1,4 +1,4 @@
-version: "3.8"
+#version: "3.8"
 
 services:
   gateway:
@@ -8,6 +8,8 @@ services:
     container_name: gateway
     ports:
       - "8080:80"
+    expose:
+      - "81"
     restart: unless-stopped
     networks:
       - internal
@@ -21,15 +23,31 @@ services:
       timeout: 3s
       retries: 10
   
+  nginx_exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: nginx_exporter
+    command:
+      - "--nginx.scrape-uri=http://gateway:81/stub_status"
+    networks:
+      - internal
+    expose:
+      - "9113"
+    depends_on:
+      - gateway
+    
   prometheus:
     image: prom/prometheus:latest
-    container_name: 'prometheus'
+    container_name: prometheus
     volumes:
       - ./metrics/prometheus/config.yml:/etc/prometheus/config.yml
     command:
       - "--config.file=/etc/prometheus/config.yml"
     ports:
-      - '9090:9090'
+      - "9090:9090"
+    networks:
+      - internal
+    depends_on:
+      - nginx_exporter
 
 networks:
   internal:

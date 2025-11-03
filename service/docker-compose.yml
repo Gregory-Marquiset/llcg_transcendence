@@ -1,6 +1,7 @@
 #version: "3.8"
 
 services:
+  ####### NGINX #######
   gateway:
     build:
       context: ./gateway
@@ -23,6 +24,7 @@ services:
       timeout: 3s
       retries: 10
   
+  ####### NGINX EXPORTER #######
   nginx_exporter:
     image: nginx/nginx-prometheus-exporter:latest
     container_name: nginx_exporter
@@ -35,13 +37,27 @@ services:
     depends_on:
       - gateway
     
+  ####### BLACKBOX EXPORTER #######
+  blackbox_exporter:
+    image: prom/blackbox-exporter:latest
+    container_name: blackbox_exporter
+    volumes:
+      - ./metrics/blackbox/blackbox.yml:/etc/blackbox_exporter/blackbox.yml
+    networks:
+      - internal
+    expose:
+      - "9115"
+    depends_on:
+      - gateway
+    
+  ####### PROMETHEUS #######
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ./metrics/prometheus/config.yml:/etc/prometheus/config.yml
+      - ./metrics/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
-      - "--config.file=/etc/prometheus/config.yml"
+      - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
     networks:

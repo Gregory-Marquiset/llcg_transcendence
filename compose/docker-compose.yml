@@ -4,7 +4,7 @@ services:
   ####### NGINX #######
   gateway:
     build:
-      context: ./gateway
+      context: ../services/gateway
       dockerfile: Dockerfile
     container_name: gateway
     ports:
@@ -40,7 +40,7 @@ services:
   ####### BLACKBOX EXPORTER #######
   blackbox_exporter:
     build: 
-      context: ./metrics/blackbox
+      context: ../infra/metrics/blackbox
     container_name: blackbox_exporter
     restart: unless-stopped
     networks:
@@ -53,7 +53,7 @@ services:
   ####### PROMETHEUS #######
   prometheus:
     build:
-      context: ./metrics/prometheus
+      context: ../infra/metrics/prometheus
     container_name: prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -73,7 +73,7 @@ services:
   ####### GRAFANA #######
   grafana:
     build:
-      context: ./metrics/grafana
+      context: ../infra/metrics/grafana
     container_name: grafana
     volumes:
       - grafana_data:/var/lib/grafana
@@ -93,27 +93,28 @@ services:
     depends_on:
       - prometheus
 
-  tilt:
-    build:
-      context: ./metrics/tilt
-      dockerfile: Dockerfile
-      args:
-        DOCKER_GID: "${DOCKER_GID}"
-    container_name: tilt
-    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
-    working_dir: /app
-    volumes:
-      - .:/app
-      - /var/run/docker.sock:/var/run/docker.sock
-      - tilt_home:/home/tilt
-    environment:
-      - DOCKER_HOST=unix://${XDG_RUNTIME_DIR:-/run/user/1000}/docker.sock
-      - HOME=/home/tilt
-    command: ["tilt", "up", "--host=0.0.0.0"]
-    ports:
-      - "10350:10350"
-    networks:
-      - internal
+  ####### TILT #######
+  # tilt:
+  #   build:
+  #     context: ./metrics/tilt
+  #     dockerfile: Dockerfile
+  #     args:
+  #       DOCKER_GID: "${DOCKER_GID}"
+  #   container_name: tilt
+  #   user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+  #   working_dir: /app
+  #   volumes:
+  #     - .:/app
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - tilt_home:/home/tilt
+  #   environment:
+  #     - DOCKER_HOST=unix://${XDG_RUNTIME_DIR:-/run/user/1000}/docker.sock
+  #     - HOME=/home/tilt
+  #   command: ["tilt", "up", "--host=0.0.0.0"]
+  #   ports:
+  #     - "10350:10350"
+  #   netwo
+  #     - internal
 
 networks:
   internal:
@@ -123,4 +124,4 @@ volumes:
   gateway_certs:
   prom_data:
   grafana_data:
-  tilt_home:
+  # tilt_home:

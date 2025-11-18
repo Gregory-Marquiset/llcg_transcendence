@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import fastifyStatic from '@fastify/static'
+import fastifyBcrypt from 'fastify-bcrypt'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import * as health from './routes/health.js'
@@ -7,7 +8,7 @@ import * as tournament from '../game/tournaments/tournaments.js'
 import * as auth from '../users/auth/auth.js'
 import { runDatabase } from '../users/usersServer.js'
 
-const app = Fastify({
+export const app = Fastify({
 	logger: true
 });
 const rootDir = dirname(fileURLToPath(import.meta.url));
@@ -15,6 +16,10 @@ const rootDir = dirname(fileURLToPath(import.meta.url));
 app.register(fastifyStatic, {
 	root: join(rootDir, '../../frontend/webapp/dist/')
 });
+
+app.register(fastifyBcrypt, {
+	saltWorkFactor: 12
+})
 
 runDatabase();
 

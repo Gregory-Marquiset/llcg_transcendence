@@ -8,20 +8,18 @@ async function authRoutes(app, options) {
 
 	app.post('/auth/register', authOpts.authRegisterOpts);
 
-	app.get('/auth/login', (req, reply) => {
-		reply.send({resp: "ok"});
-	});
+	// app.get('/auth/login', (req, reply) => {
+	// 	reply.send({resp: "ok"});
+	// });
 
-	app.post('/auth/login', (req, reply) => {
-
-	});
+	app.post('/auth/login', authOpts.authLoginOpts);
 
 	app.post('/auth/logout', (req, reply) => {
 
 	});
 
 
-
+	
 	app.get('/auth/debug_db', async (req, reply) => {
 		const query = (sql, params) => {
 			return (new Promise((resolve, reject) => {
@@ -35,7 +33,6 @@ async function authRoutes(app, options) {
 		}
 
 		try{
-			const rows = await query('SELECT * FROM users');
 			return (reply.send(rows));
 		} catch (err) {
 			req.log.error(`\n${err}\n`);

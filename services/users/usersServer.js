@@ -13,7 +13,7 @@ export const db = new sqlite3.Database('./users/data/usersDatabase.sqlite', (err
 export const runDatabase = async function () {
 	db.run(`CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		username TEXT,
+		username TEXT UNIQUE,
 		email TEXT UNIQUE,
 		password TEXT,
 		createdAt TEXT

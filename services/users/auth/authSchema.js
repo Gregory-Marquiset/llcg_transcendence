@@ -27,4 +27,17 @@ export const authRegisterOpts = {
 	handler: authController.authRegister
 }
 
+export const authLoginOpts = {
+	schema: {
+		body: {
+			type: "object",
+			required: ["email", "password"],
+			properties: {
+				email: {type: "string"},
+				password: {type: "string"}
+			}
+		}
+	},
+	handler: authController.authLogin
+}
 

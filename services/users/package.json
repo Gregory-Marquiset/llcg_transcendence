@@ -1,5 +1,8 @@
 {
   "name": "users",
   "version": "1.0.0",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "fastify-bcrypt": "^1.0.1"
+  }
 }

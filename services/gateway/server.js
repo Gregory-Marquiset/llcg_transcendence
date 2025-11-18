@@ -1,4 +1,4 @@
-import fastify from 'fastify'
+import Fastify from 'fastify'
 import fastifyStatic from '@fastify/static'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -7,7 +7,7 @@ import * as tournament from '../game/tournaments/tournaments.js'
 import * as auth from '../users/auth/auth.js'
 import { runDatabase } from '../users/usersServer.js'
 
-const app = fastify({
+const app = Fastify({
 	logger: true
 });
 const rootDir = dirname(fileURLToPath(import.meta.url));
@@ -20,8 +20,26 @@ runDatabase();
 
 app.register(health.healthRoute);
 app.register(health.ping);
-app.register(tournament.tournamentsRoutes, {prefix: '/api/v1'});
-app.register(auth.authRoutes, {prefix: '/api/v1'});
+app.register(tournament.tournamentsRoutes, { prefix: '/api/v1' });
+app.register(auth.authRoutes, { prefix: '/api/v1' });
+
+
+
+app.setErrorHandler((error, req, reply) => {
+		app.log.error(error);
+		if (error.statusCode && error.statusCode >= 400 && error.statusCode < 500)
+				return (reply.code(error.statusCode).send({ message: error.message}));
+		reply.code(500).send({ message: "Internal server error" });
+});
+
+app.setNotFoundHandler(function (req, reply) {
+		app.log.info('\nexecuting setNotFoundHandler\n');
+		reply.code(404).send( { message:'404 Not found' });
+});
+
+
+
+
 
 app.get('/', async (req, reply) => {
 	return reply.sendFile('index.html');
@@ -40,7 +58,7 @@ const start = async () => {
 	try {
 		await app.listen({port: 5000, host: '0.0.0.0'})
 	} catch (err) {
-		app.log.error(err);
+		app.log.error(`\n${err}\n`);
 		process.exit(1);
 	}
 }

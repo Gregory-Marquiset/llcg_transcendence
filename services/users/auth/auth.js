@@ -21,12 +21,26 @@ async function authRoutes(app, options) {
 	});
 
 
-	app.get('/auth/debug_db', (req, reply) => {
-		db.all('SELECT * FROM users', (err, rows) => {
-			if (err)
-				return (console.error(err.message));
-			reply.send(rows);
-		});
+
+	app.get('/auth/debug_db', async (req, reply) => {
+		const query = (sql, params) => {
+			return (new Promise((resolve, reject) => {
+				db.all(sql, params, (err, rows) => {
+					if (err)
+						reject(err);
+					else
+						resolve(rows);
+				});
+			}));
+		}
+
+		try{
+			const rows = await query('SELECT * FROM users');
+			return (reply.send(rows));
+		} catch (err) {
+			req.log.error(`\n${err}\n`);
+			reply.internalServerError("Database error");
+		}
 	});
 }
 

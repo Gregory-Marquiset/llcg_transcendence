@@ -22,7 +22,3 @@ export const runDatabase = async function () {
 				return (console.error(err.message));
 		});
 }
-
-// export const createUser = async function () {
-// 	db.run();
-// }

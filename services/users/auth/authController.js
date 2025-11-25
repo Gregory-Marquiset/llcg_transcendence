@@ -7,8 +7,6 @@ export const authRegister = async function (req, reply) {
 	const now = new Date();
 	const dateTime = `${now.getDate()}-${now.getMonth()}-${now.getFullYear()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
 
-	//db.run('DROP TABLE IF EXISTS users');
-
 	const query = (sql, params) => {
 		return (new Promise((resolve, reject) => {
 			db.run(sql, params, (err) => {

@@ -2,15 +2,8 @@ import * as authOpts from "./authSchema.js"
 import {db} from "../usersServer.js"
 
 async function authRoutes(app, options) {
-	// app.get('/auth/register', async (req, reply) => {
-
-	// });
 
 	app.post('/auth/register', authOpts.authRegisterOpts);
-
-	// app.get('/auth/login', (req, reply) => {
-	// 	reply.send({resp: "ok"});
-	// });
 
 	app.post('/auth/login', authOpts.authLoginOpts);
 
@@ -19,7 +12,7 @@ async function authRoutes(app, options) {
 	});
 
 
-	
+	//DEBUGGING ET DELETE TABLE DANS LA DB
 	app.get('/auth/debug_db', async (req, reply) => {
 		const query = (sql, params) => {
 			return (new Promise((resolve, reject) => {
@@ -33,12 +26,24 @@ async function authRoutes(app, options) {
 		}
 
 		try{
-			return (reply.send(rows));
+			const result = await query(`SELECT * FROM users`);
+			return (reply.send(result));
 		} catch (err) {
 			req.log.error(`\n${err}\n`);
-			reply.internalServerError("Database error");
+			return (reply.code(500).send({ error: "Database error" }));
 		}
 	});
+
+	app.delete('/auth/delete_all_users', async (req, reply) => {
+		db.run('DELETE FROM users', (err) => {
+			if (err)
+			{
+				req.log.error(err);
+				return (reply.code(500).send(({ message: "Database deletion error"})))
+			}
+		});
+		return (reply.code(200).send({ message: "All users deleted" }));
+	})
 }
 
 export { authRoutes };

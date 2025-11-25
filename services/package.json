@@ -18,5 +18,8 @@
     "fastify-sqlite": "^1.1.0",
     "hyperid": "^3.3.0",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "pino-pretty": "^13.1.2"
   }
 }

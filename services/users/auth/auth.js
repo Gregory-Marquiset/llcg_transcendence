@@ -3,9 +3,11 @@ import {db} from "../usersServer.js"
 
 async function authRoutes(app, options) {
 
-	app.post('/auth/register', authOpts.authRegisterOpts);
+	app.post('/auth/register',authOpts.authRegisterOpts);
 
 	app.post('/auth/login', authOpts.authLoginOpts);
+
+	app.get('/auth/me', { onRequest: [app.authenticate], ...authOpts.authMeOpts });
 
 	app.post('/auth/logout', (req, reply) => {
 

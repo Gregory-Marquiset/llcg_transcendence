@@ -6,20 +6,20 @@ export const authRegisterOpts = {
 			type: "object",
 			required: ["username", "email", "password"],
 			properties: {
-				username: {type: "string"},
-				email: {type: "string"},
-				password: {type: "string"}
+				username: { type: "string" },
+				email: { type: "string" },
+				password: { type: "string" }
 			}
 		},
 		response: {
 			200: {
 				type: "object",
 				properties: {
-					id: {type: "string"},
-					username: {type: "string"},
-					email: {type: "string"},
-					password: {type: "string"},
-					creationDate: {type: "string"}
+					id: { type: "string" },
+					username: { type: "string" },
+					email: { type: "string" },
+					password: { type: "string" },
+					creationDate: { type: "string" }
 				}
 			}
 		}
@@ -33,11 +33,37 @@ export const authLoginOpts = {
 			type: "object",
 			required: ["email", "password"],
 			properties: {
-				email: {type: "string"},
-				password: {type: "string"}
+				email: { type: "string" },
+				password: { type: "string" }
+			}
+		},
+		response: {
+			200: {
+				type: "object",
+				properties: {
+					token: { type: "string" }
+				},
+				required: ["token"]
 			}
 		}
 	},
 	handler: authController.authLogin
+}
+
+export const authMeOpts = {
+	schema: {
+		response: {
+			200: {
+				type: "object",
+				properties: {
+					id: { type: "string" },
+					username: { type: "string" },
+					email: { type: "string" },
+					createdAt: { type: "string" }
+				}
+			}
+		}
+	},
+	handler: authController.authMe
 }
 

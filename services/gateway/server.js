@@ -2,6 +2,7 @@ import Fastify from 'fastify'
 import fastifyStatic from '@fastify/static'
 import fastifyBcrypt from 'fastify-bcrypt'
 import fastifyJwt from '@fastify/jwt'
+import fastifyCookie from '@fastify/cookie'
 //import dotenv from 'dotenv'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -21,6 +22,7 @@ app.register(fastifyStatic, {
 	root: join(rootDir, '../../frontend/webapp/dist/')
 });
 
+app.register(fastifyCookie);
 app.register(authPlugin);
 
 //###### HASH DU PASSWORD #######

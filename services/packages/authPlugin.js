@@ -7,7 +7,7 @@ async function authPlugin (app, opts) {
     if (!process.env.JWT_SECRET)    
         throw new Error('JWT_SECRET manquant dans les variables d’environnement');
     app.register(fastifyJWT, {
-        secret: process.env.JWT_SECRET
+        secret: process.env.JWT_SECRET,
     });
 
     app.decorate("authenticate", async function (req, reply) {

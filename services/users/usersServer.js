@@ -1,17 +1,24 @@
 import sqlite3 from 'sqlite3'
 
-export const db = new sqlite3.Database('./users/data/usersDatabase.sqlite', (err) => {
+export const user_db = new sqlite3.Database('./users/data/usersDatabase.sqlite', (err) => {
 	if (err)
-		return (console.error(err.message));
-	console.log(`
-		
-		database
-		
-		`)
+	{
+		console.error(err.message);
+		throw new Error("userDB not init");
+	}
+	console.log(`\ndatabase\n`);
 });
 
 export const runDatabase = async function () {
-	db.run(`CREATE TABLE IF NOT EXISTS users (
+	user_db.run(`PRAGMA foreign_keys = ON`, (err) => {
+		if(err)
+		{
+			console.error(err.message);
+			//throw new Error("PRAGMA error");
+		}
+			
+	});
+	user_db.run(`CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		username TEXT UNIQUE,
 		email TEXT UNIQUE,
@@ -19,6 +26,21 @@ export const runDatabase = async function () {
 		createdAt TEXT
 		)`, (err) => {
 			if (err)
-				return (console.error(err.message));
+			{
+				console.error(err.message);
+				//throw new Error("user table run error");
+			}
+		});
+	user_db.run(`CREATE TABLE IF NOT EXISTS refreshed_tokens (
+		jwt_id INTEGER PRIMARY KEY AUTOINCREMENT,
+		user_id INTEGER REFERENCES users(id),
+		token TEXT
+		)`, (err) => {
+			if(err)
+			{
+				console.error(err.message);
+				//throw new Error("refreshed table run error");
+			}
 		});
 }
+

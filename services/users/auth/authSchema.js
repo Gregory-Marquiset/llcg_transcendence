@@ -41,9 +41,9 @@ export const authLoginOpts = {
 			200: {
 				type: "object",
 				properties: {
-					token: { type: "string" }
+					access_token: { type: "string" }
 				},
-				required: ["token"]
+				required: ["access_token"]
 			}
 		}
 	},
@@ -67,3 +67,16 @@ export const authMeOpts = {
 	handler: authController.authMe
 }
 
+export const authLogoutOpts = {
+	schema: {
+		response: {
+			204: {
+				type: "object",
+				properties: {
+					message: { type: "string" }
+				}
+			}
+		}
+	},
+	handler: authController.authLogout
+}

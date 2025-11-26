@@ -1,5 +1,5 @@
 import * as authOpts from "./authSchema.js"
-import {db} from "../usersServer.js"
+import { user_db } from "../usersServer.js"
 
 async function authRoutes(app, options) {
 
@@ -9,16 +9,14 @@ async function authRoutes(app, options) {
 
 	app.get('/auth/me', { onRequest: [app.authenticate], ...authOpts.authMeOpts });
 
-	app.post('/auth/logout', (req, reply) => {
-
-	});
+	app.delete('/auth/logout', authOpts.authLogoutOpts);
 
 
 	//DEBUGGING ET DELETE TABLE DANS LA DB
 	app.get('/auth/debug_db', async (req, reply) => {
 		const query = (sql, params) => {
 			return (new Promise((resolve, reject) => {
-				db.all(sql, params, (err, rows) => {
+				user_db.all(sql, params, (err, rows) => {
 					if (err)
 						reject(err);
 					else
@@ -37,7 +35,7 @@ async function authRoutes(app, options) {
 	});
 
 	app.delete('/auth/delete_all_users', async (req, reply) => {
-		db.run('DELETE FROM users', (err) => {
+		user_db.run('DELETE FROM users', (err) => {
 			if (err)
 			{
 				req.log.error(err);

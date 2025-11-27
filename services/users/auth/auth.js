@@ -9,6 +9,8 @@ async function authRoutes(app, options) {
 
 	app.get('/auth/me', { onRequest: [app.authenticate], ...authOpts.authMeOpts });
 
+	app.post('/auth/refresh', authOpts.authRefreshOpts);
+
 	app.delete('/auth/logout', authOpts.authLogoutOpts);
 
 

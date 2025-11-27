@@ -12,7 +12,7 @@ export const authRegisterOpts = {
 			}
 		},
 		response: {
-			200: {
+			201: {
 				type: "object",
 				properties: {
 					id: { type: "string" },
@@ -65,6 +65,21 @@ export const authMeOpts = {
 		}
 	},
 	handler: authController.authMe
+}
+
+export const authRefreshOpts = {
+	schema: {
+		response: {
+			201: {
+				type: "object",
+				properties: {
+					access_token: { type: "string" }
+				},
+				required: ["access_token"]
+			}
+		}
+	},
+	handler: authController.authRefresh
 }
 
 export const authLogoutOpts = {

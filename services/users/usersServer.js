@@ -23,9 +23,11 @@ export const runDatabase = async function () {
 		username TEXT UNIQUE NOT NULL,
 		email TEXT UNIQUE NOT NULL,
 		password TEXT NOT NULL,
+		avatar_path TEXT,
 		createdAt TEXT,
 		twofa_enabled INTEGER,
-		twofa_secret TEXT UNIQUE
+		twofa_secret TEXT UNIQUE,
+		status TEXT
 		)`, (err) => {
 			if (err)
 			{

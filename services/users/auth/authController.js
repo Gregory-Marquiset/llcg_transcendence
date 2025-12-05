@@ -21,8 +21,8 @@ export const authRegister = async function (req, reply) {
 	try {
 		const hashedPWD = await app.bcrypt.hash(req.body.password);
 
-		const result = await insertToDB(`INSERT INTO users(username, email, password, createdAt, twofa_enabled) 
-			VALUES (?, ?, ?, ?, ?)`, [req.body.username, req.body.email, hashedPWD, dateTime, 0]);
+		const result = await insertToDB(`INSERT INTO users(username, email, password, avatar_path, createdAt, twofa_enabled, status) 
+			VALUES (?, ?, ?, ?, ?, ?, ?)`, [req.body.username, req.body.email, hashedPWD, "avatars/default.jpg", dateTime, 0, "offline"]);
 		
 		return (reply.code(201).send("New entry in database"));
 	} catch (err) {
@@ -51,7 +51,7 @@ export const authLogin = async function (req, reply) {
 		}));
 	}
 
-	const insertToken = (sql, params) => {
+	const runSql = (sql, params) => {
 		return (new Promise((resolve, reject) => {
 			user_db.run(sql, params, (err) => {
 				if (err)
@@ -67,7 +67,7 @@ export const authLogin = async function (req, reply) {
 			throw httpError(401, "Invalid email or password");
 		const match = await app.bcrypt.compare(req.body.password, userHashedPassword.password);
 		if (match !== true)
-			throw new Error("Invalid email or password").statusCode(401);
+			throw httpError(401, "Invalid email or password");
 		const twofa_enabled = await selectFromDB('SELECT twofa_enabled FROM users WHERE email = ?', [req.body.email]);
 		if (twofa_enabled.twofa_enabled === 1)
 		{
@@ -83,8 +83,8 @@ export const authLogin = async function (req, reply) {
 		const access_tok = app.jwt.sign(userInfo, { expiresIn: '5m' });
 		const refresh_tok = app.jwt.sign(userInfo, { expiresIn: '1d' });
 		console.log(`\nauthLogin access_token: ${access_tok}\nauthLogin refresh_token: ${refresh_tok}\n`);
-		await insertToken(`INSERT INTO refreshed_tokens(user_id, token) VALUES (?, ?)`, [userInfo.id, refresh_tok]);
-
+		await runSql(`INSERT INTO refreshed_tokens(user_id, token) VALUES (?, ?)`, [userInfo.id, refresh_tok]);
+		await runSql('UPDATE users SET status = ? WHERE id = ?', ["online", userInfo.id]);
 		return (reply
 			.setCookie('refreshToken', refresh_tok, {
 				httpOnly: true,
@@ -115,7 +115,7 @@ export const authLogin2fa = async function (req, reply) {
 		}));
 	}
 
-	const insertToken = (sql, params) => {
+	const runSql = (sql, params) => {
 		return (new Promise((resolve, reject) => {
 			user_db.run(sql, params, (err) => {
 				if (err)
@@ -147,8 +147,8 @@ export const authLogin2fa = async function (req, reply) {
 		const access_tok = app.jwt.sign({ ...userInfo.id, ...userInfo.username }, { expiresIn: "5m" });
 		const refresh_tok = app.jwt.sign({ ...userInfo.id, ...userInfo.username }, { expiresIn: "1d" });
 		console.log(`\nauthLogin2fa access_token: ${access_tok}\nauthLogin refresh_token: ${refresh_tok}\n`);
-		await insertToken(`INSERT INTO refreshed_tokens(user_id, token) VALUES (?, ?)`, [userInfo.id, refresh_tok]);
-
+		await runSql(`INSERT INTO refreshed_tokens(user_id, token) VALUES (?, ?)`, [userInfo.id, refresh_tok]);
+		await runSql('UPDATE users SET status = ? WHERE id = ?', ["online", userInfo.id]);
 		return (reply
 			.setCookie('refreshToken', refresh_tok, {
 				httpOnly: true,
@@ -182,7 +182,7 @@ export const authMe = async function (req, reply) {
 	}
 	
 	try {
-		const userInfos = await selectFromDB('SELECT id, username, email, createdAt FROM users WHERE id = ?', req.user.id);
+		const userInfos = await selectFromDB('SELECT id, username, email, avatar_path, twofa_enabled, createdAt FROM users WHERE id = ?', req.user.id);
 		console.log(`\nauthMe userInfos: ${JSON.stringify(userInfos)}\n`);
 		return (reply.code(200).send(userInfos));
 	} catch (err) {
@@ -261,7 +261,17 @@ export const authRefresh = async function (req, reply) {
 
 
 export const authLogout = async function (req, reply) {
-	const deleteFromDB = (sql, params) => {
+	const selectFromDB = (sql, params) => {
+		return (new Promise((resolve, reject) => {
+			user_db.get(sql, params, (err, row) => {
+				if (err)
+					reject(err);
+				resolve(row);
+			});
+		}));
+	}
+	
+	const runSql = (sql, params) => {
 		return (new Promise((resolve, reject) => {
 			user_db.run(sql, params, (err) => {
 				if (err)
@@ -276,7 +286,9 @@ export const authLogout = async function (req, reply) {
 			throw httpError(401, "Missing refresh token")
 		//console.log(`\nauthLogout req.cookies.refreshToken: ${req.cookies.refreshToken}\n`);
 		app.jwt.verify(req.cookies.refreshToken);
-		const result = await deleteFromDB(`DELETE FROM refreshed_tokens WHERE token = ?`, req.cookies.refreshToken);
+		const user = await selectFromDB('SELECT user_id FROM refreshed_tokens WHERE token = ?', req.cookies.refreshToken);
+		await runSql(`DELETE FROM refreshed_tokens WHERE token = ?`, req.cookies.refreshToken);
+		await runSql('UPDATE users SET status = ? WHERE id = ?', ["offline", user.user_id]);
 		return (reply.clearCookie('refreshToken', { path: '/' })
 		.code(204)
 		.send({ message: "User successfully logout" }));

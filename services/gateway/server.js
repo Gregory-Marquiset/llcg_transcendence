@@ -3,12 +3,15 @@ import fastifyStatic from '@fastify/static'
 import fastifyBcrypt from 'fastify-bcrypt'
 import fastifyJwt from '@fastify/jwt'
 import fastifyCookie from '@fastify/cookie'
-//import dotenv from 'dotenv'
+import fastifyMultipart from '@fastify/multipart'
+
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+//###IMPORT OWN FILES ###
 import * as health from './routes/health.js'
 import * as tournament from '../game/tournaments/tournaments.js'
 import * as auth from '../users/auth/auth.js'
+import * as user from '../users/user/user.js'
 import { runDatabase } from '../users/usersServer.js'
 import authPlugin from '../packages/authPlugin.js'
 
@@ -18,12 +21,28 @@ export const app = Fastify({
 
 //###### PLUGIN ######
 const rootDir = dirname(fileURLToPath(import.meta.url));
+console.log(`\nserver.js rootDir: ${rootDir}\n`);
+app.register(fastifyStatic, {
+	root: join(rootDir, '../users/uploads/avatar/'),
+	prefix: '/avatars/',
+	decorateReply: false
+});
+
 app.register(fastifyStatic, {
 	root: join(rootDir, '../../frontend/webapp/dist/')
 });
 
+
 app.register(fastifyCookie);
 app.register(authPlugin);
+
+//###### PARSE MULTIPART FORM DATA ######
+app.register(fastifyMultipart, {
+	limits: {
+		fileSize: 5 * 1024 * 1024
+	}
+});
+
 
 //###### HASH DU PASSWORD #######
 app.register(fastifyBcrypt, {
@@ -39,14 +58,18 @@ app.register(fastifyBcrypt, {
 // });
 
 
-
+//###### RUN DATABASE ######
 runDatabase();
+
+//###### AVATAR UPLOADS DIRECTORY
+export const uploadsDir = join(rootDir, '../users/uploads/avatar/');
 
 //####### ROUTES #######
 app.register(health.healthRoute);
 app.register(health.ping);
 app.register(tournament.tournamentsRoutes, { prefix: '/api/v1' });
 app.register(auth.authRoutes, { prefix: '/api/v1' });
+app.register(user.userRoutes, { prefix: '/api/v1' });
 
 
 

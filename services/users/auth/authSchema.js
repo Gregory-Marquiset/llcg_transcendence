@@ -75,7 +75,9 @@ export const authMeOpts = {
 					id: { type: "string" },
 					username: { type: "string" },
 					email: { type: "string" },
-					createdAt: { type: "string" }
+					twofa_enabled: { type: "integer" },
+					createdAt: { type: "string" },
+					status: { type: "string" }
 				}
 			}
 		}

@@ -46,6 +46,20 @@ export const runDatabase = async function () {
 				//throw new Error("refreshed table run error");
 			}
 		});
+	user_db.run(`CREATE TABLE IF NOT EXISTS friendships (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		sender_id INTEGER NOT NULL REFERENCES users(id),
+		receiver_id INTEGER NOT NULL REFERENCES users(id),
+		status TEXT NOT NULL CHECK(status IN ('pending', 'accepted', 'refused', 'blocked')),
+		created_at TEXT,
+		updated_at TEXT,
+		UNIQUE (sender_id, receiver_id)
+		)`, (err) => {
+			if (err)
+			{
+				console.error(err.message);
+			}
+		});
 }
 
 export const httpError = (code, message) => {

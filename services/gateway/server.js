@@ -14,8 +14,9 @@ import * as health from './routes/health.js'
 import * as tournament from '../game/tournaments/tournaments.js'
 import * as auth from '../users/auth/auth.js'
 import * as user from '../users/user/user.js'
+import * as friends from '../users/friends/friends.js'
 import { runDatabase } from '../users/usersServer.js'
-import authPlugin from '../packages/authPlugin.js'
+import authPlugin from '../utils/authPlugin.js'
 
 export const app = Fastify({
 	logger: true
@@ -113,6 +114,7 @@ app.register(health.ping);
 app.register(tournament.tournamentsRoutes, { prefix: '/api/v1' });
 app.register(auth.authRoutes, { prefix: '/api/v1' });
 app.register(user.userRoutes, { prefix: '/api/v1' });
+app.register(friends.friendsRoutes, { prefix: '/api/v1' });
 
 
 

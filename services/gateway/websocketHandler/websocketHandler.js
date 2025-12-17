@@ -9,6 +9,7 @@ let connectId = 0;
 	userId,
 	connectionId,
 	ip
+	isAlive
 }
 */
 
@@ -30,13 +31,24 @@ let connectId = 0;
 
 export const websocketHandler = async function (socket, req) {
 	try {
+		// console.log(`websocketHandler socket type: ${socket?.constructor?.name}\n`);
+		// console.log(`websocketHandler req type: ${req?.constructor?.name}\n`);
+		// console.log(`websocketHandler socket typeof socket.close: ${typeof socket.close}\n`);
+		// console.log(`websocketHandler socket typeof socket.socket?.close: ${typeof socket.socket?.close}\n`);
 		await req.jwtVerify();
+		socket.isAlive = true;
 		const date = new Date().toISOString();
-		
+		console.log(`\nwebsocketHandler: new socket\n`);
+
 		connectionsIndex.set(socket, {
 			userId: req.user.id,
 			connectionId: connectId++,
-			ip: req.ip
+			ip: req.socket.remoteAddress,
+		});
+
+		socket.on("pong", () => {
+			console.log(`\npong\n`);
+			socket.isAlive = true;
 		});
 
 		let currentUserSession = sessionsByUser.get(req.user.id);
@@ -68,15 +80,23 @@ export const websocketHandler = async function (socket, req) {
 			currentUserPresence.activeSince = date;
 		}
 
-
-		
-		socket.addEventListener("message", (event) => {
+		socket.on("message", (event) => {
 			console.log(`\nwebsocketHandler Message: ${event.data}\n`);
 		});
 
-		socket.addEventListener("close", (event) => {
-
+		socket.on("close", (code) => {
+			currentUserSession.socketSet?.delete(socket);
+			if (currentUserSession.socketSet.size === 0)
+			{
+				currentUserPresence = userPresence.get(req.user.id);
+				currentUserPresence.status = "offline";
+				currentUserPresence.lastSeenAt = date;
+				currentUserPresence.activeSince = null;
+			}
+			connectionsIndex.delete(socket);
+			console.log(`\nwebsocketHandler socket.on close, code: ${code}\n`);
 		});
+
 	} catch (err) {
 		console.error(`ERROR connectionHandler: ${err.message}\n`);
 		socket.close();
@@ -84,4 +104,26 @@ export const websocketHandler = async function (socket, req) {
 		err.message = "Unhautorized"
 		throw err;
 	}
+}
+
+export const heartbeat = function () {
+	console.log(`\nwebsocketHandler heartbeat\n`);
+	connectionsIndex?.forEach((value, key) => {
+		if (!key)
+			return;
+		console.log(`value.userId: ${value.userId}`);
+		console.log(`value.connectionId: ${value.connectionId}`);
+		console.log(`value.ip: ${value.ip}`);
+		if (key.isAlive === false)
+		{
+			key.terminate();
+			return;
+		}
+		key.isAlive = false;
+		try {
+			key.ping();
+		} catch (err) {
+			key.terminate();
+		}
+	});
 }

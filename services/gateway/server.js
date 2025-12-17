@@ -133,8 +133,9 @@ app.register(user.userRoutes, { prefix: '/api/v1' });
 app.register(friends.friendsRoutes, { prefix: '/api/v1' });
 
 //###### WEBSOCKET ROUTES ######
-app.get('/ws', { websocket: true }, wsHandler.websocketHandler);
-
+app.register(async function (app){
+	app.get('/ws', { websocket: true }, wsHandler.websocketHandler);
+});
 
 
 
@@ -170,6 +171,7 @@ app.get('/jeu', async (req, reply) => {
 const start = async () => {
 	try {
 		await app.listen({port: 5000, host: '0.0.0.0'})
+		setInterval(wsHandler.heartbeat, 30000);
 	} catch (err) {
 		app.log.error(`\n${err}\n`);
 		process.exit(1);

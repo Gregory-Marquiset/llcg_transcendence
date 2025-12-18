@@ -23,9 +23,9 @@ function Welcome(){
                 <img src={logoheader} className="logoheader" alt="42 Tracker"/>
             </a>
         </div>
-            <h1 class="welcome-title" className="text-4xl w-full text-transparent bg-clip-text font-extrabold bg-gradient-to-r from-[#eab2bb] to-[#545454] p-2">
-                Hello.
-            </h1>
+            <h2 class="welcome-title" className="text-4xl w-full text-transparent bg-clip-text font-extrabold bg-gradient-to-r from-[#eab2bb] to-[#545454] p-2">
+                printf("Welcome.\n");
+            </h2>
             <div className="card">
             <Button onClick={handleSignIn} text="Se connecter"/>
             <Button onClick={handleSignUp} text="Créer un compte"/>

@@ -58,12 +58,12 @@
 .footersign {
   color: #888;
 }
-
 button {
   background-color: #eab2bb;
   color: white;
   padding: 12px 24px;
   border: none;
+  font-weight: 500;
   border-radius: 8px;
   cursor: pointer;
   height: 50px;
@@ -71,30 +71,16 @@ button {
   font-size: 18px;
   margin: 8px 0;
   transition: all 500ms;
-  text-align: centre;
+  text-align: center;
   filter: drop-shadow(0 2px 2px #545454);
-
-}
-
-.submit{
-  background-color: #eab2bb;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  height: 35px;
-  width: 200px;
-  font-size: 18px;
-  margin: 8px 0;
-  transition: all 500ms;
-  text-align: centre;
 }
 
 button:hover {
   background-color: #545454;
   font-size: 19px;
-  text-align: centre;
+  text-align: center;
   box-shadow: 0 8px 16px #eab2bb;
+  text-shadow: 0 0 0.5px white, 0 0 0.5px white;
 }
 
 a{
@@ -152,4 +138,28 @@ label .password-icon {
 }
 .welcome-title:hover{
   filter: drop-shadow(0 0 1em #eab2bb);
+}
+
+.submit{
+  background-color: #eab2bb;
+color: white;
+  border: none;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  height: 40px;
+  width: 200px;
+  font-size: 18px;
+  margin: 8px 8px;
+  transition: all 500ms;
+  text-align: center;
+  filter: drop-shadow(0 2px 2px #545454);
+}
+
+.submit:hover{
+  background-color: #545454;
+  font-size: 19px;
+  text-align: center;
+  box-shadow: 0 8px 16px #eab2bb;
+  text-shadow: 0 0 0.5px white, 0 0 0.5px white;
 }

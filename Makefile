@@ -1,4 +1,3 @@
-
 # =========
 # Makefile  (racine du projet)
 # =========
@@ -10,13 +9,13 @@ PROJECT := cg_transcendence
 # Chemin du compose (pas besoin de cd)
 COMPOSE := docker compose -f compose/docker-compose.yml
 
-# Par défaut, on cible "gateway" pour les logs/exec ; tu peux surcharger: make logs SERVICES=game
-SERVICES ?= gateway
+# Par défaut, on cible "gateway" pour les logs/exec ; tu peux surcharger: make logs SERVICE=game
+SERVICE ?= gateway
 
 # Cible par défaut
 .DEFAULT_GOAL := help
 
-.PHONY: help up up-fg build down restart logs ps exec sh clean nuke prune check pull
+.PHONY: help show show-config up up-fg build down restart logs ps exec sh clean nuke prune check pull
 
 ## Affiche l’aide
 help:
@@ -27,15 +26,35 @@ help:
 	@echo "  make build      - (Re)build les images"
 	@echo "  make down       - Stoppe et supprime les conteneurs"
 	@echo "  make restart    - Redémarre proprement (down puis up)"
-	@echo "  make logs       - Affiche les logs (SERVICES=...)"
-	@echo "  make ps         - Liste l’état des services"
-	@echo "  make sh         - Shell dans un service (SERVICES=...)"
-	@echo "  make exec CMD=… - Exécute une commande dans un service (SERVICES=...)"
+	@echo "  make logs       - Affiche les logs (SERVICE=...)"
+	@echo "  make show       - Liste l’état des services"
+	@echo "  make show-config- Liste l’état de la config compose"
+	@echo "  make sh         - Shell dans un services (SERVICE=...)"
+	@echo "  make exec CMD=… - Exécute une commande dans un service (SERVICE=...)"
 	@echo "  make clean      - Down + supprime les volumes du compose"
 	@echo "  make prune      - Nettoyage Docker (dangereux si d’autres projets tournent)"
 	@echo "  make check      - Vérifie que la gateway répond (http://localhost:8080)"
 	@echo "  make pull       - Récupère les images depuis le registre (si applicable)"
 	@echo ""
+
+## Affiche l’état actuel des services
+show:
+	- $(COMPOSE) ls
+	- $(COMPOSE) ls -a
+	- $(COMPOSE) ps
+	- $(COMPOSE) images
+	- $(COMPOSE) volumes
+	- docker network ls
+
+## Affiche l’état attendu des services
+show-config:
+	- $(COMPOSE) config --environment
+	- $(COMPOSE) config --profiles
+	- $(COMPOSE) config --services
+	- $(COMPOSE) config --variables
+	- $(COMPOSE) config --images
+	- $(COMPOSE) config --volumes
+	- $(COMPOSE) config --networks
 
 ## Build & démarre en détaché
 up:
@@ -56,22 +75,18 @@ down:
 ## Redémarre proprement
 restart: down up
 
-## Affiche les logs (par défaut: gateway). Exemple: make logs SERVICES=gateway
+## Affiche les logs (par défaut: gateway). Exemple: make logs SERVICE=gateway
 logs:
-	$(COMPOSE) logs -f $(SERVICES)
+	$(COMPOSE) logs -f $(SERVICE)
 
-## Affiche l’état des services
-ps:
-	$(COMPOSE) ps
-
-## Ouvre un shell dans un service (par défaut: gateway). Exemple: make sh SERVICES=gateway
+## Ouvre un shell dans un service (par défaut: gateway). Exemple: make sh SERVICE=gateway
 sh:
-	$(COMPOSE) exec $(SERVICES) sh
+	$(COMPOSE) exec $(SERVICE) sh
 
-## Exécute une commande dans un service : make exec SERVICES=gateway CMD="nginx -t"
+## Exécute une commande dans un service : make exec SERVICE=gateway CMD="nginx -t"
 exec:
-	@if [ -z "$(CMD)" ]; then echo "Usage: make exec SERVICES=svc CMD=\"...\""; exit 2; fi
-	$(COMPOSE) exec $(SERVICES) sh -lc '$(CMD)'
+	@if [ -z "$(CMD)" ]; then echo "Usage: make exec SERVICE=svc CMD=\"...\""; exit 2; fi
+	$(COMPOSE) exec $(SERVICE) sh -lc '$(CMD)'
 
 ## Down + supprime les volumes du compose (attention aux données locales)
 clean:

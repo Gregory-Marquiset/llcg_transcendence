@@ -1,2 +1,4 @@
-export { default as Button } from './Button'
-export { default as Footer } from './Footer'
+export { default as Button } from './Button/Button'
+export { default as Footer } from './Footer/Footer'
+export { default as LogTitle } from './LogTitle/LogTitle'
+export { default as Background } from './Background/Background'

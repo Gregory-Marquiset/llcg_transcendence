@@ -1,16 +1,11 @@
 .log-title {
-  position: fixed;          /* ⚠️ Fixed aussi */
-  top: 310px;              /* ⚠️ 2rem (32px) + 250px (height) + 10px*2 (padding) + 16px (marge) */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;              /* Pour qu'il ne déborde pas */
-  max-width: 600px;
-  text-align: center;
-  z-index: 99;             /* Juste en dessous du logo */
+  position: block;
+  top: 0;
+  -webkit-text-fill-color: transparent;
+  font-size: 30px;
+  font-weight: 600;
   background: linear-gradient(to right, #eab2bb, #545454);
   -webkit-background-clip: text;
   background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-size: 30px;
-  padding: 0.5rem;
+
 }

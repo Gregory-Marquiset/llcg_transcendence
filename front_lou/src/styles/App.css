@@ -3,6 +3,20 @@
   padding: 0;
   text-align: center;
 }
+body {
+  margin: 0;
+  padding: 0;
+  height: auto;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+.page-wrapper {
+  margin-top: 30px;
+  position: relative;
+  min-height: 150vh;
+  width: 100%;
+}
 
 .welcome-transition{
   display: flex;
@@ -11,19 +25,10 @@
   margin-bottom: calc(var(--spacing) * 8); 
 }
 
-.favicon {
-  height: 90px;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-  left: 0;
-  top: 0;
-  animation: logo-spin infinite 20s linear;
-  filter: drop-shadow(0 0 1em #545454);
-}
-
 .favicon:hover{
   filter: drop-shadow(3px 0 2em #eab2bb);
+  transform: scale(2);
+  transition: transform 330ms ease-in-out;
 }
 
 @keyframes logo-spin {
@@ -36,23 +41,25 @@
 }
 
 .logoheader {
-  position: fixed;
-  top: 5rem;              /* Hauteur depuis le haut */
-  left: 50%;              /* ⚠️ IMPORTANT : position à 50% */
-  transform: translateX(-50%);  /* ⚠️ IMPORTANT : décale de la moitié de sa largeur */
+  display: block;
+  top: 0;
+  margin: 0;
+  padding: 0;
+  position: relative ;
   height: 250px;
-  padding: 10px;
-  z-index: 100;           /* ⚠️ IMPORTANT : pour être au-dessus */
   will-change: filter;
   transition: filter 300ms;
-  animation: slidein;
   filter: drop-shadow(0 0 2em #545454);
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #eab2bb);
+
 }
 .logoheader:hover {
   filter: drop-shadow(0 0 1em #eab2bb);
+  transform: scale(1.1);
+  transition: transform 330ms ease-in-out;
 }
 
 
@@ -83,9 +90,6 @@ a{
   transition: all 500ms;
   text-align: centre;
 }
-/* code{
-  color: white;
-} */
 
 .field-name{
   color: #545454;
@@ -113,4 +117,75 @@ label .password-icon {
 }
 .welcome-title:hover{
   filter: drop-shadow(0 0 1em #eab2bb);
+}
+
+.header-container {
+  /* position */
+  position: relative;
+  display: flex;
+  top: 0;
+  /* style */
+  width: 100%;
+  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 0px;
+
+  /* debug */
+  /* border: solid red 10px; */
+}
+
+.btn-container {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  
+  /* debug */
+  /* border: solid red 10px; */
+}
+
+.form-container {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+
+  /* debug */
+  /* border: solid red 10px; */
+}
+
+.form-connexion-container {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 30px;
+
+  /* debug */
+  /* border: solid red 10px; */
+}
+.favicon {
+  /* position */
+  display: block;
+  position: relative;
+  margin: 40px auto;
+  /* style */
+  will-change: filter;
+  transition: filter 300ms;
+  animation: logo-spin infinite 20s linear;
+  filter: drop-shadow(0 0 1em #545454);
+  height: 90px;
+  padding: 1.5em;
 }

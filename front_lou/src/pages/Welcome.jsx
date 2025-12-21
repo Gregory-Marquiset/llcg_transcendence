@@ -23,6 +23,8 @@ function Welcome() {
   return (
     <>
       <Background>
+        <div className="page-wrapper">
+        <div className='header-container'>
         <motion.div
           className="welcome-transition"
           initial={{ opacity: 0, scale: 0.8 }}
@@ -36,9 +38,12 @@ function Welcome() {
           >
             <img src={logoheader} className="logoheader" alt="42 Tracker" />
           </a>
+        
         </motion.div>
+        </div>
         <LogTitle text='printf("Welcome");' />
-        <div className="card">
+       
+        <div className="btn-container">
           <motion.div
             className="card"
             variants={containerVariants}
@@ -61,6 +66,7 @@ function Welcome() {
         </div>
         <img src={favicon} className="favicon" />
         <Footer />
+        </div>
       </Background>
     </>
   )

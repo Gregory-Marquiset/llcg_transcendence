@@ -2,21 +2,21 @@ import * as authOpts from "./authSchema.js"
 
 async function authRoutes(app, options) {
 
-	app.post('/auth/register', authOpts.authRegisterOpts);
+	app.post('/register', authOpts.authRegisterOpts);
 
-	app.post('/auth/login', authOpts.authLoginOpts);
+	app.post('/login', authOpts.authLoginOpts);
 
-	app.post('/auth/login/2fa', authOpts.authLogin2faOpts);
+	app.post('/login/2fa', authOpts.authLogin2faOpts);
 
-	app.get('/auth/me', { onRequest: [app.authenticate], ...authOpts.authMeOpts });
+	app.get('/me', { onRequest: [app.authenticate], ...authOpts.authMeOpts });
 
-	app.post('/auth/refresh', authOpts.authRefreshOpts);
+	app.post('/refresh', authOpts.authRefreshOpts);
 
-	app.delete('/auth/logout', authOpts.authLogoutOpts);
+	app.delete('/logout', authOpts.authLogoutOpts);
 
-	app.post('/auth/2fa/setup', { onRequest: [app.authenticate], ...authOpts.auth2faSetupOpts });
+	app.post('/2fa/setup', { onRequest: [app.authenticate], ...authOpts.auth2faSetupOpts });
 
-	app.post('/auth/2fa/verify', { onRequest: [app.authenticate], ...authOpts.auth2faVerifyOpts });
+	app.post('/2fa/verify', { onRequest: [app.authenticate], ...authOpts.auth2faVerifyOpts });
 
 
 	// //DEBUGGING ET DELETE TABLE DANS LA DB

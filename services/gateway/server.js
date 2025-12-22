@@ -42,56 +42,80 @@ export const app = Fastify({
 // });
 
 //###### HTTP PROXY PLUGIN ######
-app.register(fastifyHttpProxy, {
+await app.register(fastifyHttpProxy, {
 	upstream: 'http://auth-service:5000',
 	prefix: '/api/v1/auth'
 });
 
-app.register(fastifyHttpProxy, {
+await app.register(fastifyHttpProxy, {
 	upstream: 'http://users-service:5000',
-	prefix: '/api/v1'
+	prefix: '/api/v1/users'
+});
+
+await app.register(fastifyHttpProxy, {
+	upstream: 'http://auth-service:5000',
+	prefix: '/_docs/auth',
+	rewritePrefix: '/docs'
+});
+
+await app.register(fastifyHttpProxy, {
+	upstream: 'http://users-service:5000',
+	prefix: '/_docs/users',
+	rewritePrefix: '/docs'
 });
 
 //###### SWAGGER PLUGIN FOR DOCS ######
-app.register(fastifySwagger, {
-	openapi: {
-		openapi: '3.0.0',
-		info: {
-			title: 'Test swagger',
-			description: 'Testing the Fastify swagger API',
-			version: '0.1.0'
-	},
-	servers: [
-	  {
-		url: 'http://localhost:5000',
-		description: 'Development server'
-	  }
-	],
-	tags: [
-	  { name: 'user', description: 'User related end-points' },
-	  { name: 'code', description: 'Code related end-points' }
-	],
-	components: {
-	  securitySchemes: {
-		apiKey: {
-			type: 'apiKey',
-			name: 'apiKey',
-			in: 'header'
-		}
-	  }
-	},
-	externalDocs: {
-	  url: 'https://swagger.io',
-	  description: 'Find more info here'
-	}
-  }
-});
+// app.register(fastifySwagger, {
+// 	openapi: {
+// 		openapi: '3.0.0',
+// 		info: {
+// 			title: 'Test swagger',
+// 			description: 'Testing the Fastify swagger API',
+// 			version: '0.1.0'
+// 	},
+// 	servers: [
+// 	  {
+// 		url: 'http://localhost:5000',
+// 		description: 'Development server'
+// 	  }
+// 	],
+// 	tags: [
+// 	  { name: 'user', description: 'User related end-points' },
+// 	  { name: 'code', description: 'Code related end-points' }
+// 	],
+// 	components: {
+// 	  securitySchemes: {
+// 		apiKey: {
+// 			type: 'apiKey',
+// 			name: 'apiKey',
+// 			in: 'header'
+// 		}
+// 	  }
+// 	},
+// 	externalDocs: {
+// 	  url: 'https://swagger.io',
+// 	  description: 'Find more info here'
+// 	}
+//   }
+// });
 
-app.register(fastifySwaggerUi, {
+await app.register(fastifySwagger, {
+  openapi: {
+    openapi: '3.0.0',
+    info: { title: 'Gateway docs', version: '1.0.0' }
+  },
+  exposeRoute: false
+})
+
+await app.register(fastifySwaggerUi, {
 	routePrefix: '/docs',
 	uiConfig: {
+		urls: [
+			{ name: 'Auth service', url: '/_docs/auth/json' },
+			{ name: 'Users Service', url: '/_docs/users/json' }
+		],
 		docExpansion: 'list',
-		deepLinking: false
+		deepLinking: true
 	}
 });
 
@@ -99,10 +123,10 @@ app.register(fastifySwaggerUi, {
 // app.register(fastifyCookie);
 
 //###### PLUGIN PERSO ######
-app.register(authPlugin);
+await app.register(authPlugin);
 
 //###### WEBSOCKET PLUGIN ######
-app.register(fastifyWebsocket, {
+await app.register(fastifyWebsocket, {
 	options: { maxPayload: 1048576 }
 });
 
@@ -115,7 +139,7 @@ app.register(fastifyWebsocket, {
 
 
 //###### HASH DU PASSWORD #######
-app.register(fastifyBcrypt, {
+await app.register(fastifyBcrypt, {
 	saltWorkFactor: 12
 });
 
@@ -135,14 +159,14 @@ app.register(fastifyBcrypt, {
 
 
 //####### ROUTES #######
-app.register(health.healthRoute);
-app.register(health.ping);
+await app.register(health.healthRoute);
+await app.register(health.ping);
 // app.register(auth.authRoutes, { prefix: '/api/v1' });
 // app.register(user.userRoutes, { prefix: '/api/v1' });
 // app.register(friends.friendsRoutes, { prefix: '/api/v1' });
 
 //###### WEBSOCKET ROUTES ######
-app.register(async function (app){
+await app.register(async function (app){
 	app.get('/ws', { websocket: true }, wsHandler.websocketHandler);
 });
 

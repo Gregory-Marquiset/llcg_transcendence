@@ -1,6 +1,8 @@
 import Fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
 import fastifyMultipart from '@fastify/multipart';
+import fastifySwagger from '@fastify/swagger';
+import fastifySwaggerUi from '@fastify/swagger-ui';
 
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -26,27 +28,56 @@ const rootDir = dirname(fileURLToPath(import.meta.url));
 export const uploadsDir = join(rootDir, './uploads/avatar/');
 
 //###### STATIC PLUGIN ######
-app.register(fastifyStatic, {
+await app.register(fastifyStatic, {
 	root: uploadsDir,
 	decorateReply: false
 })
 
+//###### SWAGGER PLUGIN FOR DOCS ######
+await app.register(fastifySwagger, {
+	openapi: {
+		openapi: '3.0.0',
+		info: {
+			title: 'Users swagger',
+			description: 'Users service description',
+			version: '0.1.0'
+		},
+		servers: [{ url: 'http://localhost:5000', description: 'Users' }],
+		tags: [{ name: 'users', description: 'Users' }],
+		components: {
+			securitySchemes: {
+				bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }
+			}
+		}
+	},
+	exposeRoute: true,
+	routePrefix: '/docs'
+});
+
+await app.register(fastifySwaggerUi, {
+  routePrefix: '/docs',
+  uiConfig: {
+    docExpansion: 'list',
+    deepLinking: true
+  }
+})
+
 //###### PARSE MULTIPART FORM DATA ######
-app.register(fastifyMultipart, {
+await app.register(fastifyMultipart, {
 	limits: {
 		fileSize: 5 * 1024 * 1024
 	}
 });
 
 //###### PLUGIN PERSO ######
-app.register(authPlugin);
-app.register(postgresPlugin);
+await app.register(authPlugin);
+await app.register(postgresPlugin);
 
 //###### USER ROUTES ######
-app.register(user.userRoutes);
+await app.register(user.userRoutes);
 
 //###### FRIENDS ROUTES ######
-app.register(friends.friendsRoutes);
+await app.register(friends.friendsRoutes);
 
 
 //###### ERROR HANDLER ######
@@ -60,11 +91,13 @@ app.setNotFoundHandler((req, reply) => {
 	reply.code(404).send({ message: '404 Not Found' });
 })
 
+await app.ready();
+//app.log.info('\nUSERS ROUTES:\n' + app.printRoutes());
 //###### STARTING SERVER ######
 const start = async () => {
 	try {
-		await app.listen({ port: 5000, host: '0.0.0.0' });
 		await initDb(app);
+		await app.listen({ port: 5000, host: '0.0.0.0' });
 	} catch (err) {
 		console.error(`\nERROR userServer\n`);
 		process.exit(1);

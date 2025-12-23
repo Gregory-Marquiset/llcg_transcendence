@@ -7,7 +7,7 @@ SHELL := /bin/sh
 PROJECT := llcg_transcendence
 
 # Chemin du compose (pas besoin de cd)
-COMPOSE := docker compose -f compose/docker-compose.yml
+COMPOSE := docker compose --env-file .env -f docker-compose.yml
 
 # Par défaut, on cible "gateway" pour les logs/exec ; tu peux surcharger: make logs SERVICE=game
 SERVICE ?= gateway

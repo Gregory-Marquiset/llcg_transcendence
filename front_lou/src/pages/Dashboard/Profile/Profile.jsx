@@ -1,5 +1,6 @@
 import '../../../styles/App.css'
-import { Footer, Background, HeaderBar, LeftMenu} from '../../../components'
+import { LogTitle, Footer, Background, HeaderBar, LeftMenu} from '../../../components'
+import './Profile.css' 
 
 function Profile() {
   return (
@@ -7,7 +8,16 @@ function Profile() {
       <Background>
         <div className="page-wrapper">
           <HeaderBar/>
-          <h1>Profile</h1>
+          <div className=' '>Mon profil</div>
+          <div className='profile-wrapper'>
+            <div className='profile-picture'/>
+              <div className='personal-infos'>
+                Mes informations personnelles
+              </div>
+              <div className='personal-infos'>
+                  Mes badges
+              </div>
+          </div>
           </div>
         <Footer/>
       </Background>

@@ -1,19 +1,13 @@
+import * as userOpts from './userSchema.js';
+
 async function userRoutes(app, options) {
-	app.get('/users', async (req, reply) => {
+	app.patch('/user/me', { onRequest: [app.authenticate], ...userOpts.userMeOpts });
 
-	});
+	app.post('/user/me/avatar', { onRequest: [app.authenticate], ...userOpts.userMeAvatarOpts });
 
-	app.get('/users/:id', async (req, reply) => {
-
-	});
-
-	app.get('/users/me', async (req, reply) => {
-		reply.send({data: "me"});
-	});
-
-	app.delete('/users/me', async (req, reply) => {
-
-	});
+	app.get('/user/:targetId/profil', { onRequest: [app.authenticate], ...userOpts.userProfilOpts });
 }
+
+//METTRE UNE SECU SI AVATAR A ETE DELETE !!!!
 
 export { userRoutes };

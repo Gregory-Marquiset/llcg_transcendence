@@ -2,22 +2,49 @@ import { Button, Footer, LogTitle, Background} from '../../components'
 import { useNavigate } from 'react-router-dom'
 import { logoheader, favicon } from '../../assets'
 import { useAuth } from '../../context/AuthContext'
+import { useState } from 'react'
 
 function SignIn(){
     const { authUser,
         setAuthUser,
         isLoggedIn,
         setIsLoggedIn} = useAuth();
+    const [userData, setUserData] = useState({
+        username: '',
+        password: ''
+    });
     const navigate = useNavigate();
 
     const handleOnClick = () => {
         navigate('/');
     }
-    const manageLogIn = (event) => {
-        event.preventDefault();
-        navigate('/dashboard');
-        setIsLoggedIn(true);
-        setAuthUser({Name: "Lou"})
+    const handleChange = (e) => {
+        const {name, value} = e.target;
+        setUserData({
+            ...userData,
+            [name] : value
+        })
+    }
+    const manageLogIn = async (e) => {
+        e.preventDefault();
+        try {
+            const reponse = await fetch('http://localhost:5000/api/v1/auth/login', {
+                method : 'POST',
+                headers :{
+                    'Content-Type': 'application/json'
+                },
+                body : JSON.stringify(userData)
+            })
+            const data = await reponse.json();
+
+            if (reponse.ok){
+                setIsLoggedIn(true);
+                navigate('/dashboard');
+            }
+        }
+        catch (err){
+            console.error('Erreur :', err)
+        }
     }
 
     return (
@@ -40,7 +67,9 @@ function SignIn(){
                             <input 
                                 type="email" 
                                 className="feild px-4 py-2 rounded-lg w-80" 
-                                name="mail" 
+                                name="email"
+                                value={userData.email}
+                                onChange={handleChange}
                             />
                         </div>
                         
@@ -52,7 +81,9 @@ function SignIn(){
                                 className="feild px-4 py-2 rounded-lg w-80" 
                                 type="password" 
                                 name="password" 
-                                id="pass" 
+                                id="pass"
+                                value={userData.password}
+                                onChange={handleChange}
                             />
                         </div>
                         

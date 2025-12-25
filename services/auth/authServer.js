@@ -3,6 +3,7 @@ import fastifyBcrypt from 'fastify-bcrypt';
 import fastifyCookie from '@fastify/cookie';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
+import cors from '@fastify/cors';
 
 //###IMPORT OWN FILES ###
 import * as auth from './routes/auth.js';
@@ -19,6 +20,12 @@ export const httpError = (code, message) => {
 	err.statusCode = code;
 	return err;
 }
+
+//###### CORS PLUGIN ###### 
+await app.register(cors, {
+    origin: 'http://localhost:5173',
+    credentials: true
+});
 
 //###### SWAGGER PLUGIN FOR DOCS ######
 await app.register(fastifySwagger, {

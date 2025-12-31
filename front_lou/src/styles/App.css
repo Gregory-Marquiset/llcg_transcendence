@@ -1,0 +1,22 @@
+#root {
+  margin: 0 ;
+  padding: 0;
+  text-align: center;
+}
+body {
+  margin: 0;
+  padding: 0;
+  height: auto;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+.page-wrapper {
+  margin-top: 0px;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: auto;
+
+  width: 100%;
+}
+

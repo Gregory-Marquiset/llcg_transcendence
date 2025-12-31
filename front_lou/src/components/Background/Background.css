@@ -1,0 +1,8 @@
+.background-regular{
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #545454, #fdf2f8, #545454);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

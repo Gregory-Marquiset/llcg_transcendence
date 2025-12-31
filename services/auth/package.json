@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "Service d'authenticqtion",
   "main": "authServer.js",
-  "scripts": {
-  },
+  "scripts": {},
   "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.2.0",
     "@fastify/jwt": "^10.0.0",
     "@fastify/postgres": "^6.0.2",
     "@fastify/swagger": "^9.6.1",

@@ -1,0 +1,4 @@
+export { default as favicon } from './favicon.png'
+export { default as logoheader } from './logoheader.png'
+export { default as profile } from './profile.png'
+export { default as setting } from './setting.png'

@@ -11,7 +11,7 @@ export const authRegister = async function (req, reply) {
 		await runSql(app.pg, `INSERT INTO users(username, email, password, avatar_path) 
 			VALUES ($1, $2, $3, $4)`, [req.body.username, req.body.email, hashedPWD, "default.jpg"]);
 		
-		return (reply.code(201).send("New entry in database"));
+		return (reply.code(201).send({message: "New entry in database"}));
 	} catch (err) {
 		console.error(`\nERROR authRegister: ${err.message}\n`);
 		if (err.code === '23505')

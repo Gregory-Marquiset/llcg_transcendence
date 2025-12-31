@@ -41,7 +41,6 @@ function SignUp() {
       navigate('/signIn')  // Redirige vers login
     else 
         console.error('Erreur:', data) // Affiche un message d'erreur à l'user
-
     
   } catch (error) {
     console.error('Erreur réseau:', error) // Affiche un message d'erreur réseau

@@ -1,14 +1,22 @@
 import '../../styles/App.css'
 import './DashboardStyles.css'
+import { useNavigate } from 'react-router-dom'
 import { Footer, Background, HeaderBar, LeftMenu} from '../../components'
+import { useAuth } from '../../context/AuthContext'
 import { useEffect, useState } from 'react'
 
 
 function Dashboard() {
   const [quote, setQuote] = useState();
-
-
-
+  const navigate = useNavigate();
+    const { authUser,
+          setAuthUser,
+          isLoggedIn,
+          setIsLoggedIn} = useAuth();
+  if(!isLoggedIn)
+  {
+    navigate('/signIn');
+  }
   return (
     <>
       <Background>
@@ -17,7 +25,7 @@ function Dashboard() {
           <div className='core-container'>
             <LeftMenu/>
             <div className='content-container'>
-              \
+              \ {authUser?.Name}
             </div>
           </div>
         </div>

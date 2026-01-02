@@ -4,7 +4,7 @@
 
 # Utilitaires
 SHELL := /bin/sh
-PROJECT := llcg_transcendence
+PROJECT := llmcg_transcendence
 
 # Chemin du compose (pas besoin de cd)
 COMPOSE := docker compose --env-file .env -f docker-compose.yml
@@ -15,7 +15,7 @@ SERVICE ?= gateway
 # Cible par défaut
 .DEFAULT_GOAL := help
 
-.PHONY: help show show-config health build pull up up-fg down restart logs logs-all logs-tail sh exec check clean no-cache no-cache-service prune nuke
+.PHONY: help show show-config health build pull up up-fg down restart logs logs-all logs-tail logs-dump sh exec test clean no-cache no-cache-service prune nuke
 
 ## Affiche l’aide
 help:
@@ -38,18 +38,18 @@ help:
 	@echo "  make logs            - Affiche les logs du service (SERVICE=..., défaut: gateway)"
 	@echo "  make logs-all        - Suit les logs de tous les services"
 	@echo "  make logs-tail       - Suit les logs du service (SERVICE=..., 200 dernières lignes)"
+	@echo "  make logs-dump       - Suit les logs de tous les services avec dump pour CI non bloquante"
 	@echo ""
 	@echo "  make sh              - Shell dans un service (SERVICE=...)"
 	@echo "  make exec CMD=...    - Exécute une commande dans un service (SERVICE=...)"
 	@echo ""
 	@echo "  make check           - Vérifie que la gateway répond (http://localhost:8080)"
 	@echo ""
-	@echo "  make clean           - Down + supprime les volumes du compose"
 	@echo "  make no-cache        - Rebuild tout sans cache puis recrée/redémarre les conteneurs"
 	@echo "  make no-cache-service- Rebuild sans cache du service (SERVICE=...) puis recrée/redémarre sans deps"
 	@echo ""
-	@echo "  make prune           - Nettoyage Docker global (dangereux si d’autres projets tournent)"
-	@echo "  make nuke            - Stoppe tout + supprime volumes/orphelins + purge images inutilisées (global)"
+	@echo "  make clean           - Down + supprime les volumes du compose"
+	@echo "  make nuke            - Stoppe tout + purge global (dangereux si d’autres projets tournent)"
 	@echo ""
 
 ## Affiche l’état actuel des services
@@ -110,6 +110,10 @@ logs-all:
 logs-tail:
 	@$(COMPOSE) logs --tail=200 -f $(SERVICE)
 
+## Pour generer les logs si echec en CI
+logs-dump:
+	$(COMPOSE) logs --no-color
+
 ## Ouvre un shell dans un service (par défaut: gateway). Exemple: make sh SERVICE=gateway
 sh:
 	$(COMPOSE) exec $(SERVICE) sh
@@ -119,15 +123,9 @@ exec:
 	@if [ -z "$(CMD)" ]; then echo "Usage: make exec SERVICE=svc CMD=\"...\""; exit 2; fi
 	$(COMPOSE) exec $(SERVICE) sh -lc '$(CMD)'
 
-## Vérifie que la gateway répond (port rootless: 8080 -> 80)
-check:
-	@echo "→ Test http://localhost:8080"
-	@wget -qO- http://localhost:8080 | head -n 5 || (echo "❌ Gateway ne répond pas"; exit 1)
-	@echo "\n✅ OK"
-
-## Down + supprime les volumes du compose (attention aux données locales)
-clean:
-	$(COMPOSE) down -v
+## Lance run_all.sh
+test:
+	@sh tests/run_all.sh
 
 ## Rebuild tout sans cache puis recrée/redémarre les conteneurs
 no-cache:
@@ -139,13 +137,13 @@ no-cache-service:
 	@$(COMPOSE) build --no-cache $(SERVICE)
 	@$(COMPOSE) up -d --no-deps --force-recreate $(SERVICE)
 
-## Nettoyage Docker global (dangereux si tu utilises Docker pour autre chose)
-prune:
-	@echo "⚠️  Attention: ceci supprime images/volumes réseaux non utilisés."
-	docker system prune -af
-	docker network prune -f || true
+## Down + supprime les volumes du compose (attention aux données locales)
+clean:
+	$(COMPOSE) down -v
 
 ## Stoppe tout + supprime volumes/orphelins puis purge les images Docker inutilisées (global)
 nuke:
 	@$(COMPOSE) down -v --remove-orphans
 	@docker image prune -af
+	docker system prune -af
+	docker network prune -f || true

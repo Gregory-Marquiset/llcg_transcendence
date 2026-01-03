@@ -13,6 +13,10 @@ function SignUp() {
     });
   const navigate = useNavigate()
   const [isExiting, setIsExiting] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confpassword, setconfPassword] = useState("")
+  const [username, setUsername] = useState("")
 
   const handleChange = (e) => {
     const {name, value} = e.target //e.target =>input sur lequel on a tape
@@ -53,7 +57,35 @@ function SignUp() {
       navigate(path)
     }, delay)
   }
+  const manageSignUp = async (event) => {
+        event.preventDefault();
+        
+        if(password !== confpassword)
+        {
+          alert("Passwords are differents");
+          return;
+        }
+        const payload = { username, email, password };
+        console.log({ username, email, password });
+        console.log("Payload to send:", payload);
+        try {
+        const response = await fetch("api/v1/auth/register", {
+        method: 'POST',
+        body: JSON.stringify( payload ),
+        headers: { 'Content-Type': 'application/json' }
+        });
 
+        if(!response.ok)
+        {
+          alert("Registration failed")
+          return;
+        }
+        alert("success")
+        navigate('/signIn');
+        } catch (err) {
+        alert("Network error: " + err.message);
+    }
+  }
   const handleOnClick = () => handleNavigateWithDelay('/', 600)
 
   return (
@@ -74,7 +106,7 @@ function SignUp() {
             initial="hidden"
             animate={isExiting ? 'exit' : 'visible'}
           >
-            <form onSubmit={handleSubmit} className="space-y-7">
+            <form onSubmit={manageSignUp} className="space-y-7">
               <motion.div variants={itemVariants}>
                 <div className="flex items-center gap-4">
                   <label className="text-transparent bg-clip-text font-extrabold bg-gradient-to-r from-[#eab2bb] to-[#545454] text-lg w-40 text-right">
@@ -83,9 +115,21 @@ function SignUp() {
                   <input
                     type="text"
                     className="feild px-4 py-2 rounded-lg w-80"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
+                    name="lastname"
+                  />
+                </div>
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <div className="flex items-center gap-4">
+                  <label className="text-transparent bg-clip-text font-extrabold bg-gradient-to-r from-[#eab2bb] to-[#545454] text-lg w-40 text-right">
+                    Prénom :
+                  </label>
+                  <input
+                    type="text"
+                    className="feild px-4 py-2 rounded-lg w-80"
+                    name="firstname"
+                    onChange={(event) => setUsername(event.target.value)}
                   />
                 </div>
               </motion.div>
@@ -99,8 +143,7 @@ function SignUp() {
                     type="email"
                     className="feild px-4 py-2 rounded-lg w-80"
                     name="email"
-                    value={formData.email}
-                    onChange={handleChange}
+                    onChange={(event) => setEmail(event.target.value)}
                   />
                 </div>
               </motion.div>
@@ -118,8 +161,25 @@ function SignUp() {
                     type="password"
                     name="password"
                     id="password"
-                    value={formData.password}
-                    onChange={handleChange}
+                    onChange={(event) => setPassword(event.target.value)}
+                  />
+                </div>
+              </motion.div>
+
+              <motion.div variants={itemVariants}>
+                <div className="flex items-center gap-4">
+                  <label
+                    htmlFor="confirmPassword"
+                    className="text-transparent bg-clip-text font-extrabold bg-gradient-to-r from-[#eab2bb] to-[#545454] text-lg w-40 text-right"
+                  >
+                    Confirmez :
+                  </label>
+                  <input
+                    className="feild px-4 py-2 rounded-lg w-80"
+                    type="password"
+                    name="confirmPassword"
+                    id="confirmPassword"
+                    onChange={(event) => setconfPassword(event.target.value)}
                   />
                 </div>
               </motion.div>

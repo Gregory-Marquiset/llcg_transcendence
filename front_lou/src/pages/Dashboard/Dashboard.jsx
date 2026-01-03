@@ -1,3 +1,6 @@
+import { useNavigate } from 'react-router-dom'
+import { logoheader, favicon } from '../../assets'
+import { useAuth } from '../../context/AuthContext'
 import '../../styles/App.css'
 import './DashboardStyles.css'
 import { Footer, Background, HeaderBar, LeftMenu} from '../../components'
@@ -5,10 +8,11 @@ import { useEffect, useState } from 'react'
 
 
 function Dashboard() {
-  const [quote, setQuote] = useState();
-
-
-
+  const { authUser,
+          setAuthUser,
+          isLoggedIn,
+          setIsLoggedIn} = useAuth();
+   console.log('authUser:', authUser);
   return (
     <>
       <Background>
@@ -17,7 +21,7 @@ function Dashboard() {
           <div className='core-container'>
             <LeftMenu/>
             <div className='content-container'>
-              \
+               HELLO {authUser?.Name}
             </div>
           </div>
         </div>

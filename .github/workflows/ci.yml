@@ -26,9 +26,9 @@ jobs:
             echo "# CI env" > .env
           fi
 
-      - name: clean logs
+      - name: clean tests_logs
         run: |
-          rm -rf tests/logs/*
+          rm -rf tests/tests_logs/*
 
       - name: Run test runner
         run: make test
@@ -45,14 +45,14 @@ jobs:
       - name: Dump logs on failure
         if: failure()
         run: |
-          make logs-dump > tests/logs/compose-logs_${{ steps.ts.outputs.ts }}.txt
+          make logs-dump > tests/tests_logs/compose-logs_${{ steps.ts.outputs.ts }}.txt
 
       - name: Upload logs artifact
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: compose-logs_${{ steps.ts.outputs.ts }}
-          path: tests/logs/compose-logs_${{ steps.ts.outputs.ts }}.txt
+          path: tests/tests_logs/compose-logs_${{ steps.ts.outputs.ts }}.txt
 
       - name: Stop stack
         if: always()

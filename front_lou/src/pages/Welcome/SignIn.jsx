@@ -11,7 +11,10 @@ function SignIn(){
     const { authUser,
         setAuthUser,
         isLoggedIn,
-        setIsLoggedIn} = useAuth();
+        setIsLoggedIn,
+        accessToken,
+        setAccessToken
+            } = useAuth();
         const navigate = useNavigate();
         const [email, setEmail] = useState("")
         const [password, setPassword] = useState("")
@@ -39,10 +42,9 @@ function SignIn(){
           return;
         }
 
-
         // request info from db from back
         const data = await response.json();
-        setAccess_Token(data.access_token);
+         setAccessToken(data.access_token);
         const responseMe = await fetch('/api/v1/auth/me', {
             method: 'GET',
             headers: {

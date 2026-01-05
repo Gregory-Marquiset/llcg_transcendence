@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router-dom'
-import { logoheader, favicon } from '../../assets'
 import { useAuth } from '../../context/AuthContext'
 import '../../styles/App.css'
 import './DashboardStyles.css'

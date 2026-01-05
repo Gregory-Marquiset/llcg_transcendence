@@ -3,7 +3,8 @@ import { LogTitle, Footer, Background, HeaderBar, LeftMenu} from '../../../compo
 import './Profile.css' 
 import { useState, useEffect } from 'react'
 import { profilepicture } from '../../../assets'
-import { AuthProvider } from '../../../context/AuthContext'
+import { useAuth } from '../../../context/AuthContext'
+
 function Profile() {
   const [userData, setUserData] = useState ({
       id: '',
@@ -12,13 +13,21 @@ function Profile() {
       avatar_path: '',
       createdAt: ''
   });
+    const { authUser,
+          setAuthUser,
+          isLoggedIn,
+          setIsLoggedIn,
+          accessToken,
+          setAccessToken
+        } = useAuth();
   useEffect(() => {
     const fetchProfile = async () => {
     try {
             const reponse = await fetch('http://localhost:5000/api/v1/auth/me', {
                 method : 'GET',
                 headers :{
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer {accessToken}`
                 },
                 credentials: 'include'
             })
@@ -33,7 +42,7 @@ function Profile() {
         }
       }
   fetchProfile()
-     }, []);
+     }, [setAuthUser]);
      if (!userData.avatar_path){
       setUserData({
         ...userData,
@@ -51,11 +60,10 @@ function Profile() {
               <img src={userData.avatar_path} className='profilepic'/>
             </div>
               <div className='personal-infos'>
-                <h3>Mes informations personnelles</h3>
-                <br/>
-                <h4>{userData.username}</h4>
-                <br/>
-                <h4>Since :{userData.createdAt}</h4>
+                <h3 className='div-title'>Mes informations personnelles</h3>
+                <h4> Name : {authUser?.Name}</h4>
+                <h4> Email : {authUser?.email}</h4>
+                <p> {accessToken}</p>
               </div>
               <div className='personal-infos'>
                   Mes badges

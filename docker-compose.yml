@@ -9,7 +9,7 @@ services:
     depends_on:
       - users-service
     networks:
-      - backend
+      - gate
 
   postgres:
     build:
@@ -55,6 +55,7 @@ services:
       - "5000:5000"
     networks:
       - backend
+      - gate
     depends_on:
       - postgres
   
@@ -90,6 +91,7 @@ services:
 
 networks:
   backend:
+  gate:
 
 volumes:
   postgresql_data:

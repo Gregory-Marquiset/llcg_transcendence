@@ -28,7 +28,7 @@ jobs:
 
       - name: clean tests_logs
         run: |
-          rm -rf tests/tests_logs/*
+          rm -rf tests/tests_logs
 
       - name: Run test runner
         run: make test

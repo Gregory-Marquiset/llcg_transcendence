@@ -29,7 +29,7 @@ function SignIn(){
         const payload = { email, password };
         try {
 
-        const response = await fetch("api/v1/auth/login", {
+        const response = await fetch("/api/v1/auth/login", {
         method: 'POST',
         body: JSON.stringify( payload ),
         headers: { 'Content-Type': 'application/json' }

@@ -11,6 +11,12 @@ LOG_LIB_FILE="$ROOT/lib/lib.sh"
 
 local_init
 
-#compose_wait_healthy global_health
+compose_config
+
+compose_build
+
+compose_up
+
+compose_wait_healthy project_health
 
 local_resume

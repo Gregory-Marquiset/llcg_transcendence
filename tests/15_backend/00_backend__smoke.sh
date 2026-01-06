@@ -11,10 +11,14 @@ LOG_LIB_FILE="$ROOT/lib/lib.sh"
 
 local_init
 
-net_exists "net_db"
+# net_exists "net_backend"
 
-net_exists "backend"
+# net_wget_http "http://static:8080/health"
 
-net_exists "gate_bakend"
+# HTTPS="https://127.0.0.1:8443/static/"
+
+# wait_https $HTTPS
+
+# https_get_health $HTTPS
 
 local_resume

@@ -11,10 +11,14 @@ LOG_LIB_FILE="$ROOT/lib/lib.sh"
 
 local_init
 
-compose_config
+# net_exists "net_gateway"
 
-compose_build
+# net_wget_http "http://static:8080/health"
 
-compose_up
+# HTTPS="https://127.0.0.1:8443/static/"
+
+# wait_https $HTTPS
+
+# https_get_health $HTTPS
 
 local_resume

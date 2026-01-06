@@ -16,8 +16,8 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - backend
-      - net_db
+      - net_backend
+      - net_database
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -30,7 +30,7 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - net_db
+      - net_database
     depends_on:
       postgres:
         condition: service_healthy
@@ -56,8 +56,8 @@ services:
     ports:
       - "5000:5000"
     networks:
-      - backend
-      - gate_backend
+      - net_backend
+      - net_gateway
     depends_on:
       postgres:
         condition: service_healthy
@@ -84,7 +84,7 @@ services:
     expose: 
       - "5000"
     networks:
-      - backend
+      - net_backend
     depends_on:
       gateway:
         condition: service_healthy
@@ -113,7 +113,7 @@ services:
     expose:
       - "5000"
     networks:
-      - backend
+      - net_backend
     depends_on:
       - gateway
     restart: unless-stopped
@@ -138,7 +138,7 @@ services:
       gateway:
         condition: service_healthy
     networks:
-      - gate_backend
+      - net_gateway
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
@@ -148,16 +148,16 @@ services:
 
 ### Metrics
 
-  project-healthcheck:
+  project_health:
     build:
-      context: ./services/project-healthcheck
+      context: ./services/project_health
     environment:
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_DB: "${POSTGRES_DB}"
     networks:
-      - backend
-      - gate_backend
-      - net_db
+      - net_backend
+      - net_gateway
+      - net_database
     depends_on:
       postgres:
         condition: service_healthy
@@ -181,9 +181,12 @@ services:
 ### Config
 
 networks:
-  backend:
-  gate_backend:
-  net_db:
+  net_database:
+    name: net_database
+  net_backend:
+    name: net_backend
+  net_gateway:
+    name: net_gateway
 
 volumes:
   postgresql_data:

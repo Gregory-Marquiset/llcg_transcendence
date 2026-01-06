@@ -31,11 +31,7 @@ jobs:
           rm -rf tests/tests_logs
 
       - name: Run test runner
-        run: make test
-
-      - name: Show health
-        if: always()
-        run: make health
+        run: make test-ci
 
       - name: Set timestamp
         if: failure()
@@ -45,7 +41,7 @@ jobs:
       - name: Dump logs on failure
         if: failure()
         run: |
-          make logs-dump > tests/tests_logs/compose-logs_${{ steps.ts.outputs.ts }}.txt
+          make logs-ci > tests/tests_logs/compose-logs_${{ steps.ts.outputs.ts }}.txt
 
       - name: Upload logs artifact
         if: failure()

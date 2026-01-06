@@ -146,6 +146,38 @@ services:
       timeout: 3s
       retries: 20
 
+### Metrics
+
+  project-healthcheck:
+    build:
+      context: ./services/project-healthcheck
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+    networks:
+      - backend
+      - gate_backend
+      - net_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+      adminer:
+        condition: service_healthy
+      gateway:
+        condition: service_healthy
+      auth-service:
+        condition: service_healthy
+      users-service:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/check.sh"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
 ### Config
 
 networks:

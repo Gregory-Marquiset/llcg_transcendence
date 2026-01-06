@@ -34,6 +34,7 @@ help:
 	@echo "  make up-fg           - Démarre en attach (pratique en dev)"
 	@echo "  make down            - Stoppe et supprime les conteneurs"
 	@echo "  make restart         - Redémarre proprement (down puis up)"
+	@echo "  make re	  	      - Nuke puis Redémarre (nuke puis up)"
 	@echo ""
 	@echo "  make logs            - Affiche les logs du service (SERVICE=..., défaut: gateway)"
 	@echo "  make logs-all        - Suit les logs de tous les services"
@@ -86,6 +87,7 @@ pull:
 ## Build & démarre en détaché
 up:
 	$(COMPOSE) up -d --build
+	@echo "http://localhost:5173/"
 
 ## Démarre en mode attach (utile pour voir les logs en direct)
 up-fg:
@@ -97,6 +99,9 @@ down:
 
 ## Redémarre proprement
 restart: down up
+
+## Nuke puis redémarre
+re:	nuke up
 
 ## Affiche les logs (par défaut: gateway). Exemple: make logs SERVICE=gateway
 logs:
@@ -126,8 +131,6 @@ exec:
 ## Lance run_all.sh
 test:
 	@sh tests/run_all.sh
-
-re:	nuke up
 
 ## Rebuild tout sans cache puis recrée/redémarre les conteneurs
 no-cache:

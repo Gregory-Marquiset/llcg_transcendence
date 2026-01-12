@@ -11,14 +11,14 @@ LOG_LIB_FILE="$ROOT/lib/lib.sh"
 
 local_init
 
-# net_exists "net_gateway"
+https_get "http://localhost:5173" 200
 
-# net_wget_http "http://static:8080/health"
+https_get "http://localhost:5173/signUp" 200
 
-# HTTPS="https://127.0.0.1:8443/static/"
+https_post v "http://localhost:5173/api/v1/auth/register" 201 "{\"username\":\"test\",\"email\":\"test@test.com\",\"password\":\"1234\"}"
 
-# wait_https $HTTPS
+https_get "http://localhost:5173/signIn" 200
 
-# https_get_health $HTTPS
+https_post v "http://localhost:5173/api/v1/auth/login" 201 "{\"email\":\"test@test.com\",\"password\":\"1234\"}"
 
 local_resume

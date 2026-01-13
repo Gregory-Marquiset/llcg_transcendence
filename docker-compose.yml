@@ -2,6 +2,27 @@
 
 services:
 
+### SECURITY
+
+  waf:
+    image: owasp/modsecurity-crs:nginx
+    container_name: waf
+    environment:
+      - PARANOIA=1
+      - SEC_RULE_ENGINE=DetectionOnly
+    ports:
+      - "8000:80"
+    volumes:
+      - ./services/waf/default.conf:/etc/nginx/conf.d/waf.conf:ro
+    networks:
+      - net_gateway
+    depends_on:
+      frontend:
+        condition: service_healthy
+      gateway:
+        condition: service_healthy
+    restart: unless-stopped
+
 ### Database
 
   postgres:
@@ -13,8 +34,10 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - postgresql_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
+    # ports:
+    #   - "5432:5432"
     networks:
       - net_backend
       - net_database
@@ -53,6 +76,8 @@ services:
       JWT_SECRET: "${JWT_SECRET}"
     expose:
       - "5000"
+    # ports:
+    #   - "5000:5000"
     ports:
       - "5000:5000"
     networks:
@@ -132,8 +157,8 @@ services:
   frontend:
     build:
       context: ./services/frontend
-    ports:
-      - "5173:80"
+    expose:
+      - "80" 
     depends_on:
       gateway:
         condition: service_healthy

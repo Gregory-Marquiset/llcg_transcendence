@@ -6,6 +6,7 @@ import './WelcomeStyles.css'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { containerVariants, itemVariants, logoVariants, faviconVariants } from '../../animations'
+import { useTranslation } from 'react-i18next'
 
 function Welcome() {
   const navigate = useNavigate()
@@ -19,7 +20,14 @@ function Welcome() {
   }
   const handleSignIn = () => handleNavigateWithDelay('/signIn', 300)
   const handleSignUp = () => handleNavigateWithDelay('/signUp', 600)
-  const handleAuth2 = () => window.location.href = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-9743d53b19228f117a0398613384ce2f24e93b2e8dfac976803e09761ddd8a6d&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2F&response_type=code';
+  const handleAuth2 = () => handleNavigateWithDelay('/Auth2', 600)
+  const { t, i18n } = useTranslation()
+  const handleLanguageChange = () => {
+    const nextLang = i18n.language === 'fr' ? 'en' : 'fr'
+    i18n.changeLanguage(nextLang)
+    localStorage.setItem('lang', nextLang)
+  }
+
   return (
     <>
       <Background>
@@ -50,16 +58,25 @@ function Welcome() {
             animate={isExiting ? 'exit' : 'visible'}
           >
             <motion.div variants={itemVariants}>
-              <Button onClick={handleSignIn} text="Se connecter" />
+              <Button onClick={handleSignIn} text={t('home.login')}/>
             </motion.div>
             <motion.div variants={itemVariants}>
-              <Button onClick={handleSignUp} text="Créer un compte" />
+              <Button onClick={handleSignUp} text={t('home.register')} />
             </motion.div>
             <motion.div variants={itemVariants}>
               <Separator />
             </motion.div>
             <motion.div variants={itemVariants}>
-              <Button onClick={handleAuth2} text="Se connecter avec 42" />
+              <Button onClick={handleAuth2} text={t('home.login42')} />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <Separator />
+            </motion.div>
+            <motion.div variants={itemVariants}>
+              <Button
+                onClick={handleLanguageChange}
+                text={t('home.language')}
+              />
             </motion.div>
           </motion.div>
         </div>

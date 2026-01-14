@@ -1,11 +1,11 @@
 .profile-wrapper{
     display: flex;
-    flex-wrap: nowrap;
+    /* flex-wrap: nowrap; */
     flex-direction: column ;
     /* border : solid red 10px; */
     margin : 2%;
     height: 1000px;
-    align-items: row;
+    align-items: center;
     gap: 30px;
 }
 

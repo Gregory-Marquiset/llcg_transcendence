@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { Background, HeaderBar, Button} from "../../../../components";
+import { Background, HeaderBar, Button, Loading} from "../../../../components";
 import './SetProfile.css'
 import { useState } from "react";
 import { useAuth } from "../../../../context/AuthContext";
@@ -9,7 +9,9 @@ function SetProfile(){
     const [newName, setNewName] = useState();
     const [newEmail, setNewEmail] = useState();
     const {accessToken} = useAuth();
+    const [loading, setLoading] = useState(false);
     const handleAvatarModification = async ( event ) => {
+        setLoading(true);
         event.preventDefault();
         if (!newAvatar){
             alert("Aucune image n'a été sélectionnée");
@@ -26,17 +28,21 @@ function SetProfile(){
                 body : formData
             });
             if (!response.ok){
-                console.error("Error while uploading avatar");
+                alert("The avatar could not exceed 5mo");
                 return ;
             }
-            alert("Avatar modifié avec succès !");
-            navigate('/dashboard/profile');  
+            setTimeout(() => {
+                alert("Avatar modifié avec succès !"),
+                setLoading(false),
+                navigate('/dashboard/profile')},
+            1000);
             } catch (err) {
                 alert(err);
             }
     }
     const handleEmailModification = async ( event ) => {
         event.preventDefault();
+        setLoading(true);
         try {
             const pathData = await fetch('/api/v1/users/user/me', {
                 method : 'PATCH',
@@ -52,8 +58,12 @@ function SetProfile(){
                 console.error("Error while patching email");
                 return ;
             }
-            else
+            else{
+                setTimeout(()=>{
+                    setLoading(false),
                 navigate('/dashboard/profile')
+                }, 1000);
+            }
         }
         catch (err){
             console.error("Fetch error :", err);
@@ -62,6 +72,7 @@ function SetProfile(){
 
     const handleNameModification = async ( event ) => {
         event.preventDefault();
+        setLoading(true);
         try{
             const patchData = await fetch('/api/v1/users/user/me', {
                 method : 'PATCH',
@@ -77,14 +88,18 @@ function SetProfile(){
                 console.error("Error while patching username");
                 return ;
             }
-            else 
-                navigate('/dashboard/profile')
+            else {
+                setTimeout(()=>{
+                    setLoading(false),
+                    navigate('/dashboard/profile')
+                }, 1000);
+            }
         }
         catch (err){
             console.error("Fetch error:", err);
         }
     }
-
+    if (loading) return <Loading/>
     return (
         <>
             <div className="page-wrapper">
@@ -108,6 +123,7 @@ function SetProfile(){
                             </form>
                             <Button text="Mettre a jour" onClick={handleEmailModification}/>
                         </div>
+                        <Button text="Retour" onClick={()=> navigate('/dashboard/profile')}/>
                     </div>
                 </Background>
             </div>

@@ -1,5 +1,5 @@
 import '../../../styles/App.css'
-import { LogTitle, Footer, Background, HeaderBar, LeftMenu, Button} from '../../../components'
+import { Footer, Background, HeaderBar, Button, Loading} from '../../../components'
 import './Profile.css' 
 import { useState, useEffect } from 'react'
 import { profilepicture } from '../../../assets'
@@ -14,14 +14,40 @@ function Profile() {
       avatar_path: '',
       twofa_enabled: ''
   });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [modify, setModify] = useState(false);
+  const [modify, setModify, wantModify, setWantModify] = useState(false);
     const {
+          setIsLoggedIn,
           accessToken
         } = useAuth();
   const handleOnClick = () =>  navigate("/dashboard/profile/modify");
+  const handleLogOut = async () => {
+    setLoading(true);
+    try {
+      const responseLogOut = await fetch('/api/v1/auth/logout', {
+        method : 'DELETE',
+        headers : {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+      if (!responseLogOut.ok){
+        alert("cant logout");
+        return ;
+      }
+       setTimeout(() => {
+          setIsLoggedIn(false);
+          setLoading(false);
+          navigate('/');
+        }, 1000);
+    }
+    catch (err){
+      alert(err);
+    }
+  }
   useEffect(() => {
   const fetchProfile = async () => {
+    setLoading(true);
     try {
       const responseMe = await fetch('/api/v1/auth/me', {
         method: 'GET',
@@ -35,10 +61,8 @@ function Profile() {
       }
       const fetchedUserData = await responseMe.json();
       console.log(fetchedUserData);
-      setUserData({
-        ...fetchedUserData,
-        avatar_path: profilepicture || fetchedUserData.avatar_path 
-      });
+      setUserData(fetchedUserData);
+      setLoading(false);
       
     } catch (err) {
       console.error("Fetch error:", err);
@@ -49,15 +73,30 @@ function Profile() {
     }
   }, [accessToken]);
 
+const handleModify = () => {
+  if (modify === true)
+    setModify(false);
+  else
+    setModify(true);
+}
+const avatarUrl = userData.avatar_path
+  ? `http://localhost:5000/uploads/avatar/${userData.avatar_path}`
+  : profilepicture;
+
+  if (loading) return <Loading/>
   return (
     <>
       <Background>
         <div className="page-wrapper">
           <HeaderBar/>
-          {/* <LogTitle text="Mon profil"/> */}
           <div className='profile-wrapper'>
             <div className='profile-picture'>
-              <img src={profilepicture || userData.avatar_path} className='profilepic'/>
+              <img src={avatarUrl} className='profilepic' onMouseEnter={handleModify}/>
+              {modify && (<>
+                <p>Changer l'avatar ?</p>
+                  <Button text="Oui" onClick={handleOnClick}/><Button text="Non" onClick={() => setModify(false)}/>
+                </>
+              )}
             </div>
               <div className='personal-infos'>
                   <h3 className='div-title'>Mes informations personnelles</h3>
@@ -69,6 +108,8 @@ function Profile() {
               <div className='personal-infos'>
                   <h3 className='div-title'>Mes badges</h3>
               </div>
+              <Button text="Se déconnecter" onClick={handleLogOut}/>
+              <br/>
           </div>
           </div>
         <Footer/>

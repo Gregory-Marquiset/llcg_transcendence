@@ -2,7 +2,7 @@ import { useAuth } from '../../context/AuthContext'
 import '../../styles/App.css'
 import './DashboardStyles.css'
 import { useNavigate } from 'react-router-dom'
-import { Footer, Background, HeaderBar, LeftMenu} from '../../components'
+import { Footer, Background, HeaderBar, LeftMenu, Loading} from '../../components'
 import { useEffect, useState } from 'react'
 
 
@@ -35,6 +35,7 @@ function Dashboard() {
             <div className='content-container'>
               \ {authUser?.Name}
               {accessToken}
+              <Loading/>
             </div>
           </div>
         </div>

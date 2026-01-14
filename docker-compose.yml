@@ -170,8 +170,8 @@ services:
         condition: service_healthy
       users-service:
         condition: service_healthy
-#      frontend:
-#        condition: service_healthy
+      frontend:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "/check.sh"]

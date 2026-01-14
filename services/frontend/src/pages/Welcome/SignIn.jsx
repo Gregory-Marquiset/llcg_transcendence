@@ -13,7 +13,10 @@ function SignIn(){
     const { authUser,
         setAuthUser,
         isLoggedIn,
-        setIsLoggedIn} = useAuth();
+        setIsLoggedIn,
+        accessToken,
+        setAccessToken
+            } = useAuth();
         const navigate = useNavigate();
         const [email, setEmail] = useState("")
         const [password, setPassword] = useState("")
@@ -55,14 +58,13 @@ function SignIn(){
             console.error("Error fetching info ");
             return ;
         }
-
         const userData = await responseMe.json();
         console.log(userData);
         //process information and navigateto dashboard
         setAuthUser({Name: userData.username})
         navigate('/dashboard');
         setIsLoggedIn(true);
-
+        setAccessToken(data.access_token)
         } catch (err) {
             alert(`${t('signin.errors.network')}: ${err.message}`)
         }

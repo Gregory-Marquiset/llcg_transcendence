@@ -21,7 +21,6 @@ function Welcome() {
   const handleSignIn = () => handleNavigateWithDelay('/signIn', 300)
   const handleSignUp = () => handleNavigateWithDelay('/signUp', 600)
   const handleAuth2 = () => handleNavigateWithDelay('/Auth2', 600)
-  
   const { t, i18n } = useTranslation()
   const handleLanguageChange = () => {
     const nextLang = i18n.language === 'fr' ? 'en' : 'fr'

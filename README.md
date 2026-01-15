@@ -34,19 +34,6 @@ A full-stack web application that turns the 42 cursus into a gamified experience
 
 **Users:** 42 students (multi-user concurrency supported).
 
-**Non-goals (MVP):**
-
-To keep the scope realistic for the evaluation timeline, v1 explicitly does **not** include:
-
-* Payments, subscriptions, or any monetization features
-* Public indexing / SEO of user profiles (no “public directory”)
-* Third-party integrations beyond authentication providers (OAuth) when enabled
-* Mobile native apps (web only)
-* Complex moderation workflows (only basic abuse safeguards if needed)
-* Production-grade horizontal scaling (single host / Compose deployment)
-* Advanced recommendation / ML features (unless claimed as a module)
-
-
 ---
 
 ## Key Features
@@ -56,6 +43,7 @@ To keep the scope realistic for the evaluation timeline, v1 explicitly does **no
 * XP, levels, badges, streaks (gamification loop)
 * Leaderboards (global + per challenge/category)
 * Real-time updates (optional): WebSocket events for live challenge updates, notifications, and online presence
+* Basic chat system between two users via WebScket.
 * Admin tools (optional): minimal admin panel for user management, moderation actions, and system health overview
 
 
@@ -68,26 +56,25 @@ To keep the scope realistic for the evaluation timeline, v1 explicitly does **no
 ### Prerequisites
 
 * Docker + Docker Compose
-* GNU Make (recommended)
+* GNU Make
 
 ### 1) Configure environment
 
 ```bash
-cp .env.example .env
+cat .denv > .env
 ```
 
 ### 2) Run the full stack (single command)
 
 ```bash
 make up
-# or: docker compose up --build
 ```
 
 ### 3) Open the app
 
-* Frontend: [http://localhost](http://localhost):<FRONT_PORT>
-* Backend API: [http://localhost](http://localhost):<API_PORT>
-* API docs (if enabled): [http://localhost](http://localhost):<API_PORT>/docs
+* Frontend: [http://localhost](http://localhost):5173
+* Backend API: [http://localhost](http://localhost):5000
+* API docs: [http://localhost](http://localhost):5000/docs
 * Grafana: [http://localhost](http://localhost):<GRAFANA_PORT>
 * Kibana: [http://localhost](http://localhost):<KIBANA_PORT>
 
@@ -100,7 +87,7 @@ make down
 ### 5) Reset database (dev only)
 
 ```bash
-make reset
+make nuke
 ```
 
 ### Test accounts (demo)
@@ -108,15 +95,9 @@ make reset
 The project provides seeded demo users to speed up evaluation.
 
 **User accounts**
-* `demo1@ft-transcendence.local` / `<PASSWORD_IN_SEED>`
-* `demo2@ft-transcendence.local` / `<PASSWORD_IN_SEED>`
-* `demo3@ft-transcendence.local` / `<PASSWORD_IN_SEED>`
+* `testuser1` / `test1@transcendence.local` / `1234`
 
-**Admin account (if enabled)**
-* `admin@ft-transcendence.local` / `<PASSWORD_IN_SEED>`
-
-> Seeds are applied automatically on first run (or via `make seed` / `make reset` depending on the environment).
-
+> Seeds are applied automatically on every Make rule that builds the project (not implemented yet).
 
 ---
 
@@ -125,13 +106,7 @@ The project provides seeded demo users to speed up evaluation.
 All secrets must stay out of git:
 
 * `.env` is **ignored**
-* `.env.example` documents required keys
-
-**Minimum required (example):**
-
-* TODO
-
-> Production-grade secrets are managed using **HashiCorp Vault** (see [Security](#security)).
+* `.denv` is a development environment, used for unit tests and CI
 
 ---
 
@@ -139,31 +114,23 @@ All secrets must stay out of git:
 
 High-level components:
 
-* **Frontend** (React): UI + client-side routing + API integration
+* **Frontend** vite + nginx / (React): UI + client-side routing + API integration
 * **Backend** (Fastify / Node.js): REST API + auth + business logic
-* **Database**: SQLite (MVP) — migration path to Postgres is documented (TODO)
+* **Database**: Postgres + adminer
 * **Reverse proxy / WAF**: Nginx + ModSecurity (hardened rules)
-* **Observability**:
-
-  * Prometheus + Grafana (metrics, dashboards, alerts)
-  * ELK (centralized logs, dashboards, retention)
-
-**Diagram:**
-
-* TODO: add `docs/architecture.png` (and link it here)
+* **Security**: HashiCorp Vault
+* **Observability**: Prometheus + Grafana (metrics, dashboards, alerts)
+* **Logs gestion**: ELK (centralized logs, dashboards, retention)
 
 ---
 
 ## Database Schema
 
-**Current DB:** SQLite (single instance).
+**Current DB:** Postgres
 **Schema diagram:**
 
-* TODO: add `docs/db_schema.png` (and link it here)
+* `docs/db_schema.png`
 
-**Core entities (example):**
-
-* TODO
 ---
 
 ## Tech Stack
@@ -171,23 +138,25 @@ High-level components:
 ### Frontend
 
 * React
-* UI: TODO (e.g. Tailwind / shadcn / MUI)
+* Tailwind
 
 ### Backend
 
 * Node.js + Fastify
-* API documentation: TODO (OpenAPI / Swagger)
+* Swagger
 
 ### Database
 
-* SQLite (MVP)
-* Planned: Postgres (recommended for concurrency, scaling, microservices)
+* PostgreSQL
+* Adminer
 
 ### DevOps
 
 * Docker / Docker Compose
 * Prometheus + Grafana
 * ELK (Elasticsearch + Logstash + Kibana)
+* Bash unit test
+* Github workflow
 
 ### Security
 
@@ -198,42 +167,13 @@ High-level components:
 
 ## Security
 
-Baseline requirements:
-
-* Passwords are **hashed + salted** (never stored in plain text)
-* Input validation on **frontend and backend**
-* Secrets are not committed, managed via `.env.example` + Vault
-* Backend must enforce **HTTPS**
-* WAF layer: **ModSecurity** enabled and hardened
-
 ### Vault (secrets management)
 
-* Vault stores: JWT signing keys, database credentials (if Postgres), API keys, etc.
-* Access policies are defined per service/environment
-
-**Dev workflow**
-* Vault is started via Docker Compose.
-* Initialization/unseal is required only for local development.
-* A minimal policy is provided per service (backend / observability).
-
-**How services receive secrets**
-* Secrets are injected as environment variables at container start (template/env approach).
-* No secrets are committed to git; `.env.example` documents required keys only.
-
+TODO
 
 ### ModSecurity (WAF)
 
-* Reverse proxy includes ModSecurity + OWASP CRS
-* Rules are hardened with minimal exceptions for JSON APIs
-**Quick WAF test checklist**
-* Should be blocked (4xx):
-  * obvious SQL injection payloads (`' OR 1=1 --`)
-  * basic XSS attempts (`<script>alert(1)</script>`)
-  * invalid content-types on JSON routes (e.g. `text/plain`)
-* Should be allowed (2xx/expected):
-  * valid JSON requests with proper `Content-Type: application/json`
-  * authenticated requests with JWT/session cookies
-  * normal user-generated content (including emojis) after sanitization/encoding
+TODO
 
 ---
 
@@ -241,57 +181,25 @@ Baseline requirements:
 
 ### Metrics (Prometheus + Grafana)
 
-* Backend exposes `/metrics` (Prometheus scrape)
-* Mandatory dashboards (minimum):
+TODO
 
-  * API request rate (RPS)
-  * Error rate (4xx/5xx)
-  * Latency (p95/p99)
-  * Container CPU/memory
-* TODO: alerting rules:
+### Logs gestion
 
-  * service down
-  * high 5xx rate
-  * latency above threshold
-
-### Logs (ELK)
-
-* Backend logs are **structured JSON** to stdout
-* Required fields:
-
-  * `timestamp`, `level`, `service`, `request_id`, `route`, `status`, `duration_ms`
-* Centralization:
-
-  * Logstash pipeline parses & ships logs to Elasticsearch
-  * Kibana dashboards provide search + filters + retention
-* TODO: add screenshots of Kibana dashboards to `docs/`
+TODO
 
 ---
 
 ## CI/CD
 
-### CI (on Pull Requests)
+### CI (on Main)
 
-* Lint/format
+* Docker tests
+* Networks tests
 * Unit tests
-* Docker build
-* Compose smoke test (`up` + healthcheck)
-* Security checks:
-
-  * secret scanning
-  * dependency audit
-  * container scan (optional but recommended)
-
-### CD (on main)
-
-* TODO: Deployment is optional for this project and depends on the chosen environment.
-
-If enabled, the pipeline:
-* builds and tags Docker images
-* pushes images to a registry
-* deploys to a staging environment
-* runs database migrations + seed in a controlled step
-
+* DB tests
+* Back tests
+* Front tests
+* User story tests
 
 ---
 
@@ -299,8 +207,8 @@ If enabled, the pipeline:
 
 Workflow:
 
-* Issues describe user stories + acceptance criteria
-* PRs are reviewed (at least 1 reviewer)
+* One feature 
+* PRs are reviewed (at least 2 reviewer)
 * CI must pass before merge
 * Merge strategy: **squash merge** to keep main readable
 

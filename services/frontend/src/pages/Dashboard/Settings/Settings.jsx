@@ -22,26 +22,6 @@ function Settings() {
               <LogTitle text="Réglages" />
             </h2>
 
-            <section onClick={() => handleSection('profile')}>
-              <LogTitle text="Mon profil" />
-              <AnimatePresence>
-                {openSection === 'profile' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="btn-setting">
-                      Changer ma photo de profil
-                    </div>
-                    <div className="btn-setting">Changer ma biographie</div>
-                    <div className="btn-setting">Linker mon github</div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </section>
-
             <section onClick={() => handleSection('security')}>
               <LogTitle text="Sécurité" />
               <AnimatePresence>

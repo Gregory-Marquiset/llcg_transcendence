@@ -13,14 +13,11 @@ function SignIn(){
     const { authUser,
         setAuthUser,
         isLoggedIn,
-        setIsLoggedIn,
-        accessToken,
-        setAccessToken
+        setIsLoggedIn
             } = useAuth();
         const navigate = useNavigate();
         const [email, setEmail] = useState("");
         const [password, setPassword] = useState("");
-        const [access_token, setAccess_Token] = useState("");
         const [isLoading, setIsLoading] = useState(false);
     const handleOnClick = () => navigate('/');
 
@@ -44,7 +41,6 @@ function SignIn(){
         }
         // request info from db from back
         const data = await response.json();
-        setAccess_Token(data.access_token);
         const responseMe = await fetch('/api/v1/auth/me', {
             method: 'GET',
             headers: {
@@ -63,7 +59,7 @@ function SignIn(){
         setIsLoggedIn(true);
         navigate('/dashboard');
         setIsLoading(false);
-        setAccessToken(data.access_token)
+        localStorage.setItem("access_token", data.access_token);
         } catch (err) {
             alert(`${t('signin.errors.network')}: ${err.message}`)
         }

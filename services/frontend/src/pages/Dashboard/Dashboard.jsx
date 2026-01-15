@@ -11,9 +11,7 @@ function Dashboard() {
         const { authUser,
           setAuthUser,
           isLoggedIn,
-          setIsLoggedIn,
-          accessToken,
-          setAccessToken
+          setIsLoggedIn
         } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 

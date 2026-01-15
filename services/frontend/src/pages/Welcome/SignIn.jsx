@@ -1,4 +1,4 @@
-import { Button, Footer, LogTitle, Background} from '../../components'
+import { Button, Footer, LogTitle, Background, Loading} from '../../components'
 import { useNavigate } from 'react-router-dom'
 import { logoheader, favicon } from '../../assets'
 import { useAuth } from '../../context/AuthContext'
@@ -16,16 +16,14 @@ function SignIn(){
         setIsLoggedIn
             } = useAuth();
         const navigate = useNavigate();
-        const [email, setEmail] = useState("")
-        const [password, setPassword] = useState("")
-    const handleOnClick = () => {
-        navigate('/');
-    }
-
+        const [email, setEmail] = useState("");
+        const [password, setPassword] = useState("");
+        const [isLoading, setIsLoading] = useState(false);
+    const handleOnClick = () => navigate('/');
 
     const manageLogIn = async (event) => {
         event.preventDefault();
-        
+        setIsLoading(true);
         // send email password to back
         const payload = { email, password };
         try {
@@ -38,10 +36,9 @@ function SignIn(){
         if(!response.ok)
         {
           alert(t('signin.errors.login_failed'))
+          setIsLoading(false);
           return;
         }
-
-
         // request info from db from back
         const data = await response.json();
         const responseMe = await fetch('/api/v1/auth/me', {
@@ -52,14 +49,16 @@ function SignIn(){
         });
         if (!responseMe.ok) {
             console.error("Error fetching info ");
+            setIsLoading(false);
             return ;
         }
         const userData = await responseMe.json();
         console.log(userData);
         //process information and navigateto dashboard
-        setAuthUser({Name: userData.username})
-        navigate('/dashboard');
+        setAuthUser({Name: userData.username});
         setIsLoggedIn(true);
+        navigate('/dashboard');
+        setIsLoading(false);
         localStorage.setItem("access_token", data.access_token);
         } catch (err) {
             alert(`${t('signin.errors.network')}: ${err.message}`)
@@ -72,7 +71,7 @@ function SignIn(){
             navigate('/dashboard');
         }
     }, [isLoggedIn]);
-
+    if (isLoading) return <Loading showHeader={false} showButton={false}/>
     return (
         <Background>
                 <div className="header-container">

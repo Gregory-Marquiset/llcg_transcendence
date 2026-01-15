@@ -113,3 +113,26 @@
     position: relative;
     width: 100%;
 }
+
+.results {
+    all : inherit;
+    background-color: #dfd9d9;
+    width: 200px;
+    height: 600px;
+    overflow-y: scroll;
+    align-content: start;
+    transition: all 300ms;
+}
+.result:hover{
+    box-shadow: 0 8px 16px #858585;
+}
+
+.result-search{
+    border: #cac9c9 solid 1px;
+    margin-bottom: 5px;
+    transition: all 300ms;
+}
+
+.result-search:hover{
+    box-shadow: 8px 8px 16px #eab2bb;
+}

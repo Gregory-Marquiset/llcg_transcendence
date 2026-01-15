@@ -37,6 +37,7 @@ export default function Loading({duration = 1000, showProgress = true, showButto
         </div>
         {showProgress && 
         <progress className="progress-bar" value={percentage} max={100}></progress>}
+        <br/>
         {showButton && 
         <Button text="Retour" onClick={() => navigate('/dashboard')}/>}
         </div>

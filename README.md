@@ -12,12 +12,13 @@ A full-stack web application that turns the 42 cursus into a gamified experience
 * [Quickstart and tests](#quickstart-and-tests)
 * [CI/CD & Project management](#cicd--project-management)
 * [Modules points](#modules-points)
-* [Contributors responsibilities](#contributors-responsibilities)
+* [Contributors responsibilities](#contributors-responsabilities)
 * [Resources & AI Usage](#resources--ai-usage)
 
 ---
+<a id="project-overview"></a>
 
-## Project Overview
+## 🌐 Project Overview
 
 **Goal:** provide a clean, simple and motivating platform where 42 students can create or join challenges, track progress and compete fairly.
 
@@ -77,8 +78,9 @@ High-level components:
 * HashiCorp Vault for secrets
 
 ---
+<a id="quickstart-and-tests"></a>
 
-## Quickstart and tests
+## 🚀 Quickstart and tests
 
 ### Prerequisites
 
@@ -145,8 +147,9 @@ make test-nc
 > Seeds are applied automatically on every Make rule that builds the project (not implemented yet).
 
 ---
+<a id="cicd--project-management"></a>
 
-## CI/CD & Project management
+## ⚙ CI/CD & Project management
 
 ### Workflow (Branching & PR)
 - All changes are made in a branch created from `main`.
@@ -188,8 +191,9 @@ Versioning work conventions:
   * `docs(README.md): basic README.md added`
 
 ---
+<a id="modules-points"></a>
 
-## Modules points
+## 🧩 Modules points
 
 Target: **>= 19 points** (Majors: 2 pts, Minors: 1 pt)
 
@@ -222,8 +226,9 @@ Target: **>= 19 points** (Majors: 2 pts, Minors: 1 pt)
 > We may adjust scope/modules during development, but the goal is to stay **>= 19 points** with solid, demonstrable deliverables.
 
 ---
+<a id="contributors-responsabilities"></a>
 
-## Contributors responsibilities
+## 👥 Contributors responsabilities
 
 > We are a team of 5. Roles are documented and each member can explain their work.
 
@@ -338,8 +343,10 @@ Target: **>= 19 points** (Majors: 2 pts, Minors: 1 pt)
 > And a special thanks to the cats, soon we will all be transcended by the power of [the flower of knowledge](https://www.youtube.com/watch?v=uwmeH6Rnj2E)
 
 ---
+<a id="resources--ai-usage"></a>
 
-## Resources & AI Usage
+## 📑 Resources & AI Usage
+
 ### Documentation / References
 
 * [Fastify documentation](https://fastify.io/docs/latest/)

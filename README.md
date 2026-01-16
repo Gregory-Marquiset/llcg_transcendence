@@ -9,8 +9,7 @@ A full-stack web application that turns the 42 cursus into a gamified experience
 ## Table of Contents
 
 * [Project overview](#project-overview)
-* [Quickstart and tests](#quickstart)
-* [Architecture](#architecture)
+* [Quickstart and tests](#quickstart-and-tests)
 * [CI/CD & Project management](#cicd--project-management)
 * [Modules points](#modules-points)
 * [Contributors responsibilities](#contributors-responsibilities)
@@ -79,7 +78,7 @@ High-level components:
 
 ---
 
-## Quickstart
+## Quickstart and tests
 
 ### Prerequisites
 
@@ -230,11 +229,11 @@ Target: **>= 19 points** (Majors: 2 pts, Minors: 1 pt)
 
 | Member   | Role(s)                         | Responsibilities |
 | -------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| lobriott | Project Manager + Frontend Lead | Backlog / Planning / Coordination, UI/UX & mockups, React frontend, design system (reusable components), notifications, analytics dashboards, GDPR features, gamification UX |
+| lobriott | Project Manager + Frontend Lead | Planning / Coordination, UI/UX & mockups, React frontend, design system (reusable components), notifications, analytics dashboards, GDPR features, gamification UX |
 | lzaengel | Frontend Developer              | i18n (≥3 languages), UI integration, OAuth2, Friends gestion, dashboard data extraction |
 | mda_cunh | Security                        | WAF (ModSecurity), Vault secrets |
 | cdutel   | Tech Lead Backend               | Backend architecture, Fastify codebase, JWT/session strategy, database design & migrations, user management/auth, public API (API key + rate limiting + docs) |
-| gmarquis | Product Owner + DevOps          | Global project documentation, CI/CD, unit test (Bash script), observability (Prometheus/Grafana + ELK), health/status + backups/DR |
+| gmarquis | Product Owner + DevOps          | Backlog & global project documentation, CI/CD, unit test (Bash script), observability (Prometheus/Grafana + ELK), health/status + backups/DR |
 
 ### PM + Frontend Lead
 

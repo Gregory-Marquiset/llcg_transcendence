@@ -45,7 +45,7 @@ await app.register(fastifySwagger, {
 			description: 'Users service description',
 			version: '0.1.0'
 		},
-		servers: [{ url: 'http://localhost:5000', description: 'Users' }],
+		servers: [{ url: 'http://localhost:5000/api/v1/users' }],
 		tags: [{ name: 'users', description: 'Users' }],
 		components: {
 			securitySchemes: {

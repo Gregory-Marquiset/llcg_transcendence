@@ -40,9 +40,11 @@ export const onSocketConnected = function (userId, socket, date) {
         presenceBroadcaster({ 
             type: "presence:update",
             userId,
-            status: currentUserPresence.status,
-            lastSeenAt: currentUserPresence.lastSeenAt,
-            activeSince: currentUserPresence.activeSince
+            payload: {
+                status: currentUserPresence.status,
+                lastSeenAt: currentUserPresence.lastSeenAt,
+                activeSince: currentUserPresence.activeSince
+            }
         });
     }
 }
@@ -66,9 +68,11 @@ export const onSocketDisconnected = function (userId, socket, date) {
         presenceBroadcaster({
             type: "presence:update",
             userId,
-            status: currentUserPresence.status,
-            lastSeenAt: currentUserPresence.lastSeenAt,
-            activeSince: currentUserPresence.activeSince
+            payload: {
+                status: currentUserPresence.status,
+                lastSeenAt: currentUserPresence.lastSeenAt,
+                activeSince: currentUserPresence.activeSince
+            }
         });
     }
 }

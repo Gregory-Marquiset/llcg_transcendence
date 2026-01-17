@@ -1,100 +1,167 @@
-export const badges = [
-    {
+import { tropheeSilver, tropheeGold, tropheeRegular } from './trophee/index'
+import { spaceshipSilver, spaceshipGold, spaceshipRegular } from './spaceship/index'
+import { croissanceSilver, croissanceGold, croissanceRegular } from './croissance/index'
+import { ideaSilver, ideaGold, ideaRegular } from './idea/index'
+import { likeSilver, likeGold, likeRegular } from './like/index'
+import { medalSilver, medalGold, medalRegular } from './medal/index'
+import { screenSilver, screenGold, screenRegular } from './screen/index'
+
+export const badges = [ {
         name : 'Trophee',
         category : 'Ranking',
-        level_1 : 'Under top 10',
-        nb_1 : 10,
-        path_1: './trophee/trophee_silver.png',
-        level_2 : 'Under top 3',
-        nb_2 : 3,
-        path_2: './trophee/trophee.png',
-        level_3 : 'Top 1',
-        nb_3 : 1,
-        path_3: './trophee/trophee_gold.png'
-    },
-    {
+        levels : [{
+                    level : 1,
+                    description: 'Under top 10',
+                    threshold : 10,
+                    path: tropheeSilver
+                },
+                {
+                    level : 2,
+                    description: 'Under top 3',
+                    threshold : 3,
+                    path: tropheeRegular
+                },
+                {
+                    level : 3,
+                    description: 'Top 1',
+                    threshold : 1,
+                    path: tropheeGold
+                }
+            ]
+    }, {
         name : 'Croissance',
         category : 'Productivity',
-        level_1 : '10 tasks completed',
-        nb_1 : 10,
-        path_1 : './croissance/croissance_silver.png',
-        level_2 : '100 tasks completed',
-        nb_2 : 100,
-        path_2 : './croissance/croissance.png',
-        level_3 : '500 tasks completed',
-        nb_3 : 500,
-        path_3 : './croissance/croissance_gold.png'
-    },
-    {
+        levels : [{
+                    level : 1,
+                    description: '10 tasks completed',
+                    threshold : 10,
+                    path: croissanceSilver
+                },
+                {
+                    level : 2,
+                    description: '100 tasks completed',
+                    threshold : 100,
+                    path: croissanceRegular
+                },
+                {
+                    level : 3,
+                    description: '500 tasks completed',
+                    threshold : 500,
+                    path: croissanceGold
+                }] 
+    }, {
         name : 'Like',
         category : 'Number of friendship',
-        level_1 : '1 friend',
-        nb_1 : 1,
-        path_1 : './like/like_silver.png',
-        level_2 : '10 friends',
-        nb_2 : 10,
-        path_2 : './like/like.png',
-        level_3 : '30 friends',
-        nb_3 : 30,
-        path_3 : './like/like_gold.png'
-    },
-    {
+        levels : [{
+                    level : 1,
+                    description: '1 friend',
+                    threshold : 1,
+                    path: likeSilver
+                },
+                {
+                    level : 2,
+                    description: '10 friends',
+                    threshold : 10,
+                    path: likeRegular
+                },
+                {
+                    level : 3,
+                    description: '30 friends',
+                    threshold : 30,
+                    path: likeGold
+                }]
+    }, {
         name : 'Medal',
         category : 'Number of days connected in a row',
-        level_1 : '1 week',
-        nb_1 : 7,
-        path_1 : './medal/medal_silver.png',
-        level_2 : '1 month',
-        nb_2 : 30,
-        path_2 : './medal/medal.png',
-        level_3 : '3 months',
-        nb_3 : 90,
-        path_3 : './medal/medal_gold.png'
-    },
-    {
+        levels : [{
+                level : 1,
+                description: '1 week',
+                threshold : 7,
+                path: medalSilver
+        },
+        {
+                level : 2,
+                description: '1 month',
+                threshold : 30,
+                path: medalRegular
+        },
+        {
+                level : 3,
+                description: '3 months',
+                threshold : 90,
+                path: medalGold
+        }]
+    }, {
         name : 'Screen',
         category : 'LogTime recap in the month (reset every month)',
-        level_1 : '1 hour',
-        nb_1 : 1,
-        path : './screen/screen_silver.png',
-        level_2 : '30 hours',
-        nb_2 : 30,
-        path : './screen.png',
-        level_3 : '100 hours',
-        nb_3 : 100,
-        path : './screen/screen_gold.png'
-    },
-    {
+        levels : [{
+                level : 1,
+                description: '1 hour',
+                threshold : 1,
+                path: screenSilver
+        },
+        {
+                level : 2,
+                description: '30 hours',
+                threshold : 30,
+                path: screenRegular
+        },
+        {
+                level : 3,
+                description: '100 hours',
+                threshold : 100,
+                path: screenGold
+        }]
+    }, {
         name : 'Spaceship',
         category : 'Seniority on the app',
-        level_1 : '1 day',
-        nb_1 : 1,
-        path_1: './spaceship/spaceship_silver.png',
-        level_2 : '3 month',
-        nb_2 : 90,
-        path_2 : './spaceship/spaceship.png',
-        level_3 : '1 year',
-        path_3 : './spaceship/spaceship__gold.png',
-        nb_3 : 365,
-        
-    },
-    {
-        name : 'Star',
-        category : 'Admin',
-        logins: ['gmarquis', 'mda-cunh', 'cdutel', 'lzaengel', 'lobriott'],
-        path : './star/star.png'
+        levels : [{
+                level : 1,
+                description: '1 day',
+                threshold : 1,
+                path: spaceshipSilver
+        },
+        {
+                level : 2,
+                description: '3 month',
+                threshold : 90,
+                path: spaceshipRegular
+        },
+        {
+                level : 3,
+                description: '1 year',
+                threshold : 365,
+                path: spaceshipGold
+        }]      
     },
     {
         name : 'Idea',
         category : 'Number of upload',
-        level_1 : '1 file uploaded',
-        nb_1 : 1,
-        path_1 : './idea/idea_silver.png',
-        level_2 : '10 file uploaded',
-        nb_2 : 10,
-        path_2 : './idea/idea.png',
-        level_3 : '50 file uploaded',
-        nb_3 : 50,
-        path_3 : './idea/idea_gold.png'
+        levels : [{
+                level : 1,
+                description: '1 file uploaded',
+                threshold : 1,
+                path: ideaSilver
+        },
+        {
+                level : 2,
+                description: '10 file uploaded',
+                threshold : 10,
+                path: ideaRegular
+        },
+        {
+                level : 3,
+                description: '50 file uploaded',
+                threshold : 50,
+                path: ideaGold
+        }]
+    },
+]
+export const starBadge = [
+    {
+        name : 'Star',
+        category : 'Admin',
+        logins: ['gmarquis', 'mda-cunh', 'cdutel', 'lzaengel', 'lobriott'],
+        path : '/star/star.png'
     }
 ]

@@ -72,3 +72,102 @@
     margin-right: 20px;
     margin-bottom: 20px;
 }
+
+.streaks {
+    margin-right: 20px;
+    margin-top: 70px;
+    border: 2px solid #eab2bb;
+    border-radius: 10px;
+    flex: 0 0 280px;
+    padding: 15px;
+    background-color: white;
+    position: relative;
+    text-align: center;
+}
+
+.streaks h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 16px;
+    text-align: center;
+}
+
+.streak-container {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 30px);
+}
+
+.streak-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.streak-number {
+    font-size: 48px;
+    font-weight: bold;
+    color: #eab2bb;
+    line-height: 1;
+    transition: color 0.3s ease;
+}
+
+.streak-number.zero {
+    color: #ccc;
+}
+
+.streak-label {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Flèche indicateur */
+.streak-arrow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+    font-size: 20px;
+    color: #72b242;
+    margin-left: -10px;
+    margin-top: -70px;
+    transition: transform 0.5s ease, color 0.3s ease;
+    z-index: 5;
+}
+
+.streak-days {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.day-label {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    font-weight: bold;
+    color: #999;
+    background: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.day-label.active {
+    color: #eab2bb;
+    border-color: #eab2bb;
+    background: #fff5f7;
+}

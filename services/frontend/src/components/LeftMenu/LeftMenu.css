@@ -8,6 +8,7 @@
     padding-left: 15px;
     padding-top: 15px;
     left: 20px;
+    flex: 0 0 350px;
 }
 
 .btn {

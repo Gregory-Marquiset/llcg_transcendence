@@ -1,0 +1,98 @@
+//import { connectionsIndex } from "./connexionRegistry.js";
+
+const maxChatPayloadSize = 16 * 1024;
+
+export const checkEventType = (event, socket) => {
+
+    if (typeof event === "string")
+        return (event);
+    else if (Buffer.isBuffer(event))
+        return (event.toString("utf8"));
+    else if (event instanceof Uint8Array)
+        return (Buffer.from(event).toString("utf8"));
+    else
+    {
+        socket.badFrames++;
+        if (socket.badFrames > 5)
+        {
+            socket.close(1008, "too_much_bad_frames");
+            return (null);
+        }
+        socket.send(JSON.stringify({ type: "error", code: "unsupported_frame_type" }));
+        return (null);
+    }
+}
+
+
+export const checkPayloadSize = (rawText, socket) => {
+    
+    const bytes = new TextEncoder().encode(rawText).length;
+	if (bytes > maxChatPayloadSize)
+		socket.close(1009, "payload_too_large");
+}
+
+
+export const checkAndTrimRawText = (rawText, socket) => {
+    rawText = rawText.trim();
+    if (rawText.length === 0)
+    {
+        socket.badFrames++;
+        if (socket.badFrames > 5)
+        {
+            socket.close(1008, "too_much_bad_frames");
+            return (null);
+        }
+        socket.send(JSON.stringify({ type: "error", code: "empty_message" }));
+        return (null);
+    }
+    return (rawText);
+}
+
+
+export const checkJSONValidity = (obj, socket, connectionsIndex, actualUserId) => {
+    if (obj?.type !== "chat:send" || !obj?.requestId || !obj?.payload
+        || typeof obj.payload !== "object")
+    {
+            socket.send(JSON.stringify({ type: "error", code: "bad_request_format" }));
+            return (null);
+    }
+    
+    if (!obj.payload.toUserId || obj.payload.toUserId === undefined)
+    {
+        socket.send(JSON.stringify({ type: "error", code: "bad_request_format" }));
+        return (null);
+    }
+
+    if (connectionsIndex.get(socket).userId !== actualUserId)
+    {
+        socket.close(1008, "unauthorized");
+        return (null);
+    }
+
+    const toUserId = new Number(obj.payload.toUserId)
+    if (Number.isNaN(toUserId) || obj.payload.toUserId === actualUserId)
+    {
+        socket.send(JSON.stringify({ type: "error", code: "invalid_userId" }));
+        return (null);
+    }
+
+    if (typeof (obj?.payload?.content) !== "string")
+    {
+        socket.send(JSON.stringify({ type: "error", code: "invalid_content_type" }));
+        return (null);
+    }
+
+    obj.payload.content = obj.payload.content.trim();
+    if (obj?.payload?.content.length === 0)
+    {
+        socket.send(JSON.stringify({ type: "error", code: "empty_content" }));
+        return (null);
+    }
+
+    if (obj?.payload?.content.length > 4 * 1024)
+    {
+        socket.send(JSON.stringify({ type: "error", code: "message_too_long" }));
+        return (null);
+    }
+    return (obj);
+}

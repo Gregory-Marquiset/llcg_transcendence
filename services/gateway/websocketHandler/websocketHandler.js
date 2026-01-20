@@ -1,9 +1,10 @@
 import * as presence from "../presence/presenceService.js";
+import * as wsChatHandler from "./websocketChatHandler.js";
 import { connectionsIndex } from "./connexionRegistry.js";
 
 
 let connectId = 0;
-const maxChatPayloadSize = 16 * 1024;
+//const maxChatPayloadSize = 16;
 
 export const websocketHandler = async function (socket, req) {
 	try {
@@ -33,57 +34,28 @@ export const websocketHandler = async function (socket, req) {
 		socket.on("message", (event) => {
 			try {
 				// NEED AJOUT SECU NOMBRE MSG PAR SECONDE
+
+				// Protocole JSON: {
+				// 	type: "chat:send" ou "chat:message",
+				//  requestId: id,
+				//	payload {
+				//		content: string
+				//		}
+				//	}
 				let rawText;
 
-				if (typeof event === "string")
-					rawText = event;
-				else if (Buffer.isBuffer(event))
-					rawText = event.toString("utf8");
-				else if (event instanceof Uint8Array)
-					rawText = Buffer.from(event).toString("utf8");
-				else
-				{
-					socket.badFrames++;
-					if (socket.badFrames > 5)
-						socket.close(1008, "too_much_bad_frames");
-					socket.send(JSON.stringify({ type: "error", code: "unsupported_frame_type" }));
-				}
-
-				const bytes = new TextEncoder().encode(rawText).length;
-				if (bytes > maxChatPayloadSize)
-				{
-					socket.close(1009, "payload_too_large");
+				rawText = wsChatHandler.checkEventType(event, socket);
+				if (!rawText)
 					return;
-				}
-				rawText.trim();
-				if (rawText.length < 0)
-				{
-					socket.badFrames++;
-					if (socket.badFrames > 5)
-						socket.close(1008, "too_much_bad_frames");
-					socket.send(JSON.stringify({ type: "error", code: "empty_message" }));
-				}
+				wsChatHandler.checkPayloadSize(rawText, socket);
+				rawText = wsChatHandler.checkAndTrimRawText(rawText, socket);
+				if (!rawText)
+					return;
 
-				const obj = JSON.parse(rawText);
-				if (obj?.type !== "chat:send" || obj?.payload || typeof obj.payload !== "object"
-					|| obj?.requestId)
-						socket.send(JSON.stringify({ type: "error", code: "bad_request_format" }));
-				
-				if (!obj.payload.toUserId || obj.payload.toUserId === undefined)
-					socket.send(JSON.stringify({ type: "error", code: "bad_request_format" }));
-				if (connectionsIndex.get(socket).userId !== req.user.id)
-					socket.close(1008, "unauthorized");
-				const toUserId = new Number(obj.payload.toUserId)
-				if (toUserId === NaN || obj.payload.toUserId === req.user.id)
-					socket.send(JSON.stringify({ type: "error", code: "invalid_userId" }));
-
-				if (obj?.payload?.content !== "string")
-					socket.send(JSON.stringify({ type: "error", code: "invalid_content_type" }));
-				if (obj?.payload?.content.trim().length === 0)
-					socket.send(JSON.stringify({ type: "error", code: "empty_message" }));
-				if (obj?.payload?.content.length > 4 * 1024)
-					socket.send(JSON.stringify({ type: "error", code: "message_too_long" }));
-				obj.payload.content.trim();
+				let obj = JSON.parse(rawText);
+				obj = wsChatHandler.checkJSONValidity(obj, socket, connectionsIndex, req.user.id);
+				if (!obj)
+					return;
 
 				socket.send(JSON.stringify({ message: "Message bien recu" }));
 

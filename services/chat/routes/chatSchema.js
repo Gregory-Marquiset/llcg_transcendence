@@ -8,8 +8,10 @@ export const createMessagesOpts = {
 				fromUserId: "integer",
 				toUserId: "integer",
 				content: "string",
-				requestId: "integer"
-			}
+				requestId: "string",
+				clientSentAt: "string"
+			},
+			required: ["fromUserId", "toUserId", "content", "requestId", "clientSentAt"]
 		},
 		response: {
 			201: {

@@ -31,14 +31,15 @@ export const websocketHandler = async function (socket, req) {
 
 		presence.onSocketConnected(req.user.id, socket, date);
 
-		socket.on("message", (event) => {
+		socket.on("message", async (event) => {
 			try {
 				// NEED AJOUT SECU NOMBRE MSG PAR SECONDE
 
 				// Protocole JSON: {
 				// 	type: "chat:send" ou "chat:message",
-				//  requestId: id,
+				//  requestId: id (string a generer de facon random pour ne pas avoir des messages en doublons dans la db),
 				//	payload {
+				//		toUserId: integer,
 				//		content: string
 				//		}
 				//	}
@@ -57,6 +58,18 @@ export const websocketHandler = async function (socket, req) {
 				if (!obj)
 					return;
 
+				let chatObj = {
+					fromUserId: req.user.id,
+					toUserId: obj.payload.toUserId,
+					content: obj.payload.content,
+					requestId: obj.requestId,
+					clientSentAt: new Date.toISOString()
+				};
+
+				let response = await wsChatHandler.chatServiceCreateMessage(chatObj, req.headers.authorization);
+				console.log(`\nwebsocketHandler chat service response: ${JSON.stringify(response)}\n`);
+
+				
 				socket.send(JSON.stringify({ message: "Message bien recu" }));
 
 			} catch (err) {

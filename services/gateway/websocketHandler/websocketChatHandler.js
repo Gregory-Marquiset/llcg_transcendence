@@ -96,3 +96,16 @@ export const checkJSONValidity = (obj, socket, connectionsIndex, actualUserId) =
     }
     return (obj);
 }
+
+
+export const chatServiceCreateMessage = async function (chatObj, token) {
+    const response = await fetch("http://chat-service:5000/api/v1/chat/messages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": token
+        },
+        body: JSON.parse(chatObj)
+    });
+    return (response.json());
+}

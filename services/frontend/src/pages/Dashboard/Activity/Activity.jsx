@@ -15,12 +15,12 @@ function Activity() {
               <LeftMenu setIsLoading={setIsLoading}/>
               <div className='content-container'>
                 <div className='agenda-todo-container'>
-                <Agenda/>
-                <ToDoListEditor/>
+                <Agenda setIsLoading={setIsLoading}/>
+                <ToDoListEditor setIsLoading={setIsLoading}/>
                 </div>
                 <div className='historic-uploads-container'>
-                  <Historic/>
-                  <LastUploads/>
+                  <Historic setIsLoading={setIsLoading}/>
+                  <LastUploads setIsLoading={setIsLoading}/>
                 </div>
               </div>
             </div>

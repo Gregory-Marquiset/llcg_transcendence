@@ -34,9 +34,8 @@ const toDo = [
     }
 ]
 
-export default function Agenda () {
+export default function Agenda ({setIsLoading}) {
     const [date, setDate] = useState(new Date());
-    const [hasEvent, setHasEvent] = useState(false);
     const parseDate = (dateTarget) =>{
         const [day, month, year] = dateTarget.split('/');
         return `${year}-${month}-${day}`;

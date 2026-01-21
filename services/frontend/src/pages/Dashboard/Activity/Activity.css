@@ -112,21 +112,18 @@
     background-color: rgb(250, 150, 182);
     color: white;
     font-weight: 700;
-    font-size: 30px;
+    top:1px;
+    display: flex;
+    flex-direction: column;
+    font-size: 15px;
 }
-.react-calendar__tile.has-event:hover {
-    .event-dot{
-        scale: 1.5;
-        bottom: 10px;
-    }
-}
-    
+
 .event-dot {
     position: absolute;
-    bottom: 8px;
-    color: red;
+    bottom: 1px;
+    color: rgb(254, 252, 252);
     margin: 5px;
-    font-size: 40px;
+    font-size: 20px;
     line-height: 0;
     height: 0;
     transition: all 300ms;

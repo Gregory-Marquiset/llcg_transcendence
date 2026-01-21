@@ -24,12 +24,10 @@ export default function Historic({setIsLoading}){
         <div className="historic-container" key='0'>
             <h3>   Votre historique</h3>
             {data.map((item) => {
-                return <>
-                    <div className="historic-tile" key={item.id}>
+                return <div className="historic-tile" key={item.id}>
                         <h3>  <strong>{item.title}</strong> : {item.description}</h3>
                         <h4>{item.date}.  </h4>
                     </div>
-                </>
             })}
         </div>
     </>

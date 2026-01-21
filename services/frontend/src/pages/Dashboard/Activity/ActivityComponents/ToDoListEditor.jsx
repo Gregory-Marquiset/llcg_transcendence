@@ -1,6 +1,7 @@
 import '../Activity.css'
 import { Button } from '../../../../components'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+
 const data = [
     {
         id: 1,
@@ -26,13 +27,26 @@ const data = [
 ]
 
 export default function ToDoListEditor(){
-    const [title, description, deadline] = useState('');
-    const newTask = (() =>{})
+    const [title, setTitle]= useState('');
+    const [description, setDescription]= useState('');
+    const  [deadline, setDeadline] = useState('');
+    const inputTitle = useRef();
+    const inputDeadline = useRef();
+    const inputDescription = useRef();
+    const newTask = (() =>{
+
+    })
     return <>
             <div className='todolist-editor-container'>
                 <h3>   To do list editor</h3>
                 <div className='todo' key='0'>
-                    <h3>Add a new task :</h3>
+                    <h3>    Add a new task :</h3>
+                    <h4> Titre</h4>
+                    <input ref={inputTitle} className='input-new-todo'></input>
+                    <h4> Description</h4>
+                    <input ref={inputDescription} className='input-new-todo'></input>
+                    <h4> Deadline</h4>
+                    <input ref={inputDeadline} className='input-new-todo'></input>
                     <Button onClick={newTask} text="Add"/>
                 </div>
                     {data.map((element) => (

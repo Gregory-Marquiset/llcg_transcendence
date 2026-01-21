@@ -10,6 +10,8 @@
     border-radius: 10px;
     padding: 20px;
     width: 400px;
+    flex: 1;
+    height: 420px;
 }
 
 .calendar-container h3 {
@@ -20,19 +22,19 @@
 }
 
 .react-calendar {
-    /* width: 50%; */
     border: inherit;
     border-radius: inherit;
     font-family: inherit;
     padding: 20px;
     background-color: #f6f4f4;
+    flex: 1;
 }
 
 .react-calendar__navigation {
-    margin-bottom: 1em;
-    height: 44px;
+    /* margin-bottom: 1em; */
+    height: 50px;
     text-align: center;
-    height: 60px;
+    /* height: 60px; */
 }
 
 .react-calendar__navigation button {
@@ -43,7 +45,7 @@
     color: #333;
     border-radius: 8px;
     transition: all 300ms;
-    padding: 5px;
+    padding: 1px;
 }
 
 .react-calendar__navigation button:enabled:hover,
@@ -88,8 +90,9 @@
 }
 
 .react-calendar__tile--now {
-    background: #fff5f7;
-        color: #858585;
+    background: #ffffff;
+    color: #858585;
+    border : #eab2bb solid 3px;
     font-weight: bold;
 }
 
@@ -97,19 +100,17 @@
     background: #eab2bb !important;
     color: white !important;
     font-weight: bold;
-    scale: 1.1;
-        color: #858585;
+    color: #858585;
 }
 
 .react-calendar__tile--active:enabled:hover,
 .react-calendar__tile--active:enabled:focus {
-    background: #eab2bb !important;
-    scale: 1.1;
-        color: #858585;
+    background: #bd8790 !important;
+    color: #858585;
 }
 
 .react-calendar__tile.has-event {
-    background-color: rgb(250, 150, 182);
+    background-color: #eab2bb;
     color: white;
     font-weight: 700;
     top:1px;
@@ -134,7 +135,28 @@
     border-radius: 10px;
     flex: 1;
     margin: 10px;
+    overflow-y: scroll;
+    height: 440px;
 }
+
+.todolist-editor-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.todolist-editor-container::-webkit-scrollbar-track {
+    background: #f6f4f4;
+    border-radius: 10px;
+}
+
+.todolist-editor-container::-webkit-scrollbar-thumb {
+    background-color: #eab2bb;
+    border-radius: 10px;
+}
+
+.todolist-editor-container::-webkit-scrollbar-thumb:hover {
+    background-color: #d89aa4;
+}
+
 
 .agenda-todo-container{
     display: flex;
@@ -150,6 +172,14 @@
     font-size: 25px;
     font-weight: 250;
     margin-top: 5px;
+    color: #333;
+    white-space: pre;
+}
+
+.todolist-editor-container h4 {
+    font-size: 20px;
+    font-weight: 250;
+    margin: 0px;
     color: #333;
     white-space: pre;
 }
@@ -244,4 +274,21 @@
 .lastuploads-container {
     background-color: #ffffffc2;
     box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.input-new-todo{
+    border: 1px solid #85858568;
+    border-radius: 10px;
+    height: 30px;
+    margin : 3px;
+    margin-bottom: 7px;
+}
+
+.day-details{
+    font-size: 20px;
+}
+
+.day-details h3{
+    margin-top: 10px;
+    font-size: 20px;
 }

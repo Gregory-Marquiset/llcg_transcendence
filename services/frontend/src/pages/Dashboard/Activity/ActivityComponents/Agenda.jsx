@@ -2,6 +2,7 @@ import { Calendar } from 'react-calendar'
 import { useEffect, useState } from 'react'
 import 'react-calendar/dist/Calendar.css'
 import '../Activity.css'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const toDo = [
     {
@@ -36,6 +37,7 @@ const toDo = [
 
 export default function Agenda ({setIsLoading}) {
     const [date, setDate] = useState(new Date());
+    const [focusDate, setFocusDate] = useState(null);
     const parseDate = (dateTarget) =>{
         const [day, month, year] = dateTarget.split('/');
         return `${year}-${month}-${day}`;
@@ -51,9 +53,10 @@ export default function Agenda ({setIsLoading}) {
         for (let i = 0; i < toDo.length; i++){
             if (parseDate(toDo[i].deadline) === dateKey && !toDo[i].done)
                 return true;
-        }     
+        }  
         return false;
     }
+
   return (
     <div>
         <div className='agenda-wrapper'>
@@ -66,7 +69,39 @@ export default function Agenda ({setIsLoading}) {
                     tileContent={({ date }) => 
                         hasTask(date) ? <div className="event-dot">•</div> : null
                     }
+                    onClickDay={(date) => {
+                        if (focusDate !== null)
+                            setFocusDate(null);
+                        else
+                            setFocusDate(date);
+                        }
+                    }
                     />
+                {focusDate && (
+                    <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 1, y: -10 }}
+                                transition={{ duration: 1 }}
+                            >
+                        <div className="day-details">
+                            <h3> Tâches du {focusDate.toLocaleDateString('fr-FR')}</h3>
+                            {toDo.filter(
+                                t => parseDate(t.deadline) === getDateKey(focusDate)
+                            ).length === 0 ? (
+                                <h3>Rien à afficher</h3>
+                            ) : (
+                                toDo.filter(
+                                        t => parseDate(t.deadline) === getDateKey(focusDate)
+                                    ).map(t => (
+                                        <div key={t.id} className="todo-tile-editor">
+                                            {t.title}
+                                        </div>
+                                    ))
+                            )}
+                        </div>
+                </motion.div>
+            )}
             </div>
         </div>
     </div>

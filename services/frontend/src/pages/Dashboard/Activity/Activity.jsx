@@ -1,7 +1,7 @@
 import '../../../styles/App.css'
 import { Footer, Background, HeaderBar, LeftMenu, Loading} from '../../../components'
 import { useState } from 'react'
-import { Agenda, ToDoListEditor } from './ActivityComponents'
+import { Agenda, ToDoListEditor, Historic, LastUploads} from './ActivityComponents'
 
 function Activity() {
     const [isLoading, setIsLoading] = useState(false);
@@ -14,8 +14,14 @@ function Activity() {
             <div className='core-container'>
               <LeftMenu setIsLoading={setIsLoading}/>
               <div className='content-container'>
+                <div className='agenda-todo-container'>
                 <Agenda/>
                 <ToDoListEditor/>
+                </div>
+                <div className='historic-uploads-container'>
+                  <Historic/>
+                  <LastUploads/>
+                </div>
               </div>
             </div>
           </div>

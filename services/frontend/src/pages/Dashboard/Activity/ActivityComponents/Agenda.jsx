@@ -24,6 +24,13 @@ const toDo = [
         done : 0,
         description : "réviser l'exam",
         deadline : '01/02/2026'
+    },
+    {
+        id: 3,
+        title : "Révisions",
+        done : 0,
+        description : "réviser l'exam",
+        deadline : '25/03/2026'
     }
 ]
 

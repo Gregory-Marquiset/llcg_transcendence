@@ -5,11 +5,11 @@ export const createMessagesOpts = {
 		body: {
 			type: "object",
 			properties: {
-				fromUserId: "integer",
-				toUserId: "integer",
-				content: "string",
-				requestId: "string",
-				clientSentAt: "string"
+				fromUserId: { type: "integer" },
+				toUserId: { type: "integer" },
+				content: { type: "string" },
+				requestId: { type: "string" },
+				clientSentAt: { type: "string" }
 			},
 			required: ["fromUserId", "toUserId", "content", "requestId", "clientSentAt"]
 		},
@@ -17,7 +17,12 @@ export const createMessagesOpts = {
 			201: {
 				type: "object",
 				properties: {
-					status: "string"
+					id: { type: "integer" },
+					fromUserId: { type: "integer" },
+					toUserId: { type: "integer" },
+					content: { type: "string" },
+					createdDate: { type: "string" },
+					requestId: { type: "string" }
 				}
 			}
 		}

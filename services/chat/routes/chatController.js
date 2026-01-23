@@ -3,6 +3,7 @@ import { getRowFromDB, getAllRowsFromDb, runSql } from '../../shared/postgresFun
 
 export const createMessage = async function (req, reply) {
 	try {
+        console.log(`\ncreateMessage: typeof req.body: ${typeof req.body}\nreq.body: ${JSON.stringify(req.body)}\n`);
         let chatObj = req.body;
 
         if (typeof chatObj?.content !== "string")
@@ -17,8 +18,7 @@ export const createMessage = async function (req, reply) {
         if (!areUsersFriends || areUsersFriends.status !== "accepted")
             throw httpError(403, "Users are not friends");
 
-        let responseObj;
-        const isMessageAlreadyInDB = await getRowFromDB(app.pg, `SELECT * FROM chat_history WHERE request_id = $1`, [chatObj.requestId]);
+        let isMessageAlreadyInDB = await getRowFromDB(app.pg, `SELECT * FROM chat_history WHERE request_id = $1`, [chatObj.requestId]);
         if (!isMessageAlreadyInDB)
         {
             const res = await runSql(app.pg, `INSERT INTO chat_history (from_user_id, to_user_id, content, request_id, client_sent_at)
@@ -34,12 +34,27 @@ export const createMessage = async function (req, reply) {
             if (isMessageAlreadyInDB.content !== chatObj.content)
                 throw httpError(409, "Conflict");
         }
-        responseObj.messageId = isMessageAlreadyInDB.id;
-        responseObj.fromUserId = isMessageAlreadyInDB.from_user_id;
-        responseObj.toUserId = isMessageAlreadyInDB.to_user_id;
-        responseObj.content = isMessageAlreadyInDB.content;
-        responseObj.createMessage = new Date().toISOString();
-        responseObj.requestId = isMessageAlreadyInDB.request_id;
+        console.log(`\ncreateMessage isMessageAlreadyInDB element:\n
+            id: ${isMessageAlreadyInDB.id}\n
+            from_user_id: ${isMessageAlreadyInDB.from_user_id}\n
+            to_user_id: ${isMessageAlreadyInDB.to_user_id}\n
+            content: ${isMessageAlreadyInDB.content}\n
+            requestId: ${isMessageAlreadyInDB.request_id}\n`);
+
+        let responseObj = {
+            messageId: isMessageAlreadyInDB.id,
+            fromUserId: isMessageAlreadyInDB.from_user_id,
+            toUserId: isMessageAlreadyInDB.to_user_id,
+            content: isMessageAlreadyInDB.content,
+            createdDate: new Date().toISOString(),
+            requestId: isMessageAlreadyInDB.request_id 
+        };
+        // responseObj.messageId = isMessageAlreadyInDB.id;
+        // responseObj.fromUserId = isMessageAlreadyInDB.from_user_id;
+        // responseObj.toUserId = isMessageAlreadyInDB.to_user_id;
+        // responseObj.content = isMessageAlreadyInDB.content;
+        // responseObj.createMessage = new Date().toISOString();
+        // responseObj.requestId = isMessageAlreadyInDB.request_id;
         
         return (reply.code(201).send(responseObj));
     

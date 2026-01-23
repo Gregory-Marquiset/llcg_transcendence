@@ -36,7 +36,7 @@ export const websocketHandler = async function (socket, req) {
 				// NEED AJOUT SECU NOMBRE MSG PAR SECONDE
 
 				// Protocole JSON: {
-				// 	type: "chat:send" ou "chat:message",
+				// 	type: "chat:send",
 				//  requestId: id (string a generer de facon random pour ne pas avoir des messages en doublons dans la db),
 				//	payload {
 				//		toUserId: integer,
@@ -63,7 +63,7 @@ export const websocketHandler = async function (socket, req) {
 					toUserId: obj.payload.toUserId,
 					content: obj.payload.content,
 					requestId: obj.requestId,
-					clientSentAt: new Date.toISOString()
+					clientSentAt: new Date().toISOString()
 				};
 
 				let response = await wsChatHandler.chatServiceCreateMessage(chatObj, req.headers.authorization);
@@ -80,7 +80,9 @@ export const websocketHandler = async function (socket, req) {
 					if (socket.badFrames > 5)
 						socket.close(1008, "too_much_bad_frames");
 					socket.send(JSON.stringify({ type: "error", code: "invalid_json" }));
+					return;
 				}
+				socket.send(JSON.stringify({ type: "error", code: "internal_error" }));
 			}
 		});
 

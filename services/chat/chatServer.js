@@ -52,7 +52,9 @@ await app.register(authPlugin);
 await app.register(postgresPlugin);
 
 //###### CHAT ROUTES ######
-await app.register(chat.chatRoutes);
+await app.register(chat.chatRoutes, {
+	prefix: '/api/v1/chat'
+});
 
 //###### ERROR HANDLER ######
 app.setErrorHandler((error, req, reply) => {

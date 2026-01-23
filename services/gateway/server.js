@@ -66,7 +66,7 @@ await app.register(fastifyHttpProxy, {
 
 // await app.register(fastifyHttpProxy, {
 // 	upstream: 'http://chat-service:5000',
-// 	prefix: '/_docs/users',
+// 	prefix: '/_docs/chat',
 // 	rewritePrefix: '/docs'
 // });
 

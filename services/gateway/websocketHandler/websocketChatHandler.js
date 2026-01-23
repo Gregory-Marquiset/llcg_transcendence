@@ -76,7 +76,7 @@ export const checkJSONValidity = (obj, socket, connectionsIndex, actualUserId) =
         return (null);
     }
 
-    if (typeof (obj?.payload?.content) !== "string")
+    if (typeof obj?.payload?.content !== "string")
     {
         socket.send(JSON.stringify({ type: "error", code: "invalid_content_type" }));
         return (null);
@@ -105,7 +105,7 @@ export const chatServiceCreateMessage = async function (chatObj, token) {
             "Content-Type": "application/json",
             "Authorization": token
         },
-        body: JSON.parse(chatObj)
+        body: JSON.stringify(chatObj)
     });
     return (response.json());
 }

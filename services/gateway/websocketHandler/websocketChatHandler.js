@@ -1,5 +1,6 @@
 //import { connectionsIndex } from "./connexionRegistry.js";
-
+import { getPresenceForUsers } from "../presence/presenceService.js";
+import { sessionsByUser } from "../presence/presenceStore.js";
 
 const maxChatPayloadSize = 16 * 1024;
 
@@ -116,4 +117,27 @@ export const chatServiceCreateMessage = async function (chatObj, token) {
          throw err;
     }
     return (response.json());
+}
+
+
+export const deliverMessage = (chatServiceResponse) => {
+    let isUserOnline = getPresenceForUsers([chatServiceResponse.toUserId]);
+
+    if (isUserOnline.get(chatServiceResponse.toUserId).status === "online")
+    {
+        console.log(`\ndeliverMessage user ${chatServiceResponse.toUserId} is online\n`);
+        let event = {
+            type: "chat.message",
+            payload: chatServiceResponse
+        }
+
+        sessionsByUser.get(chatServiceResponse.toUserId).socketSet.forEach((socket) => {
+            socket.send(JSON.stringify(event));
+        });
+    }
+    else
+    {
+        console.log(`\ndeliverMessage user ${chatServiceResponse.toUserId} is offline\n`);
+    }
+
 }

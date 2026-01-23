@@ -66,10 +66,10 @@ export const websocketHandler = async function (socket, req) {
 					clientSentAt: new Date().toISOString()
 				};
 
-				let response = await wsChatHandler.chatServiceCreateMessage(chatObj, req.headers.authorization);
-				console.log(`\nwebsocketHandler chat service response: ${JSON.stringify(response)}\n`);
+				let chatServiceResponse = await wsChatHandler.chatServiceCreateMessage(chatObj, req.headers.authorization);
+				console.log(`\nwebsocketHandler chat service response: ${JSON.stringify(chatServiceResponse)}\n`);
 				
-
+				wsChatHandler.deliverMessage(chatServiceResponse);
 				
 				socket.send(JSON.stringify({ message: "Message bien recu" }));
 

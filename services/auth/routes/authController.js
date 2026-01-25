@@ -144,7 +144,15 @@ export const authMe = async function (req, reply) {
 	try {
 		const userInfos = await getRowFromDB(app.pg, 'SELECT id, username, email, avatar_path, twofa_enabled, createdAt FROM users WHERE id = $1', [req.user.id]);
 		console.log(`\nauthMe userInfos: ${JSON.stringify(userInfos)}\n`);
-		return (reply.code(200).send(userInfos));
+		let userStats = await getRowFromDB(app.pg, 'SELECT rank_position, task_completed, friends_count, streaks_history, current_streak_count, monthly_logtime, monthly_logtime_month, app_seniority, upload_count, created_at, updated_at, last_login FROM user_stats WHERE user_id = $1',
+			[req.user.id]
+		);
+		if (!userStats){
+			await runSql(app.pg, 'INSERT INTO user_stats (user_id) VALUES ($1)', [req.user.id]);
+			userStats = await getRowFromDB(app.pg, 'SELECT rank_position, task_completed, friends_count, streaks_history, current_streak_count, monthly_logtime, monthly_logtime_month, app_seniority, upload_count, created_at, updated_at, last_login FROM user_stats WHERE user_id = $1',
+			[req.user.id]);
+		}
+		return (reply.code(200).send({...userInfos, stats : userStats}));
 	} catch (err) {
 		console.error(`\nERROR authMe: ${err.message}\n`);
 		err.message = "Error with Database";

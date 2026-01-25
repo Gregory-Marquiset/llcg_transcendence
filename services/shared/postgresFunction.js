@@ -42,14 +42,14 @@ export const initDb = async function (app) {
                 updated_at timestamp,
                 UNIQUE (sender_id, receiver_id))`);
 
-            await client.query(`CREATE TABLE badge_categories (
+            await client.query(`CREATE TABLE IF NOT EXISTS badge_categories (
                 id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                 name text UNIQUE NOT NULL,
                 category text NOT NULL,
                 color text NOT NULL,
                 created_at timestamp DEFAULT CURRENT_TIMESTAMP
             )`);
-            await client.query(`CREATE TABLE badges (
+            await client.query(`CREATE TABLE IF NOT EXISTS badges (
                 badge_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                 badge_category_id integer NOT NULL REFERENCES badge_categories(id) ON DELETE CASCADE,
                 level integer NOT NULL CHECK (level IN (1, 2, 3)),

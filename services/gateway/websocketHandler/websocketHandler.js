@@ -1,19 +1,18 @@
 import * as presence from "../presence/presenceService.js";
+import * as wsValidatorHandler from "./websocketEventValidator.js";
 import * as wsChatHandler from "./websocketChatHandler.js";
+import * as wsAuthHandler from "./websocketAuthHandler.js";
 import { connectionsIndex } from "./connexionRegistry.js";
 
 
 let connectId = 0;
-//const maxChatPayloadSize = 16;
 
 export const websocketHandler = async function (socket, req) {
 	try {
-		// console.log(`websocketHandler socket type: ${socket?.constructor?.name}\n`);
-		// console.log(`websocketHandler req type: ${req?.constructor?.name}\n`);
-		// console.log(`websocketHandler socket typeof socket.close: ${typeof socket.close}\n`);
-		// console.log(`websocketHandler socket typeof socket.socket?.close: ${typeof socket.socket?.close}\n`);
 		await req.jwtVerify();
 		socket.isAlive = true;
+		socket.userId = req.user.id;
+		socket.currentToken = req.headers.authorization;
 		socket.badFrames = 0;
 		let date = new Date().toISOString();
 		console.log(`\nwebsocketHandler: new socket\n`);
@@ -29,10 +28,11 @@ export const websocketHandler = async function (socket, req) {
 			socket.isAlive = true;
 		});
 
-		let becameOnline = presence.onSocketConnected(req.user.id, socket, date);
+		let becameOnline = presence.onSocketConnected(socket.userId, socket, date);
 		if (becameOnline === true)
-			await wsChatHandler.pushUndeliveredMessages(req.headers.authorization);
+			await wsChatHandler.pushUndeliveredMessages(socket.currentToken);
 
+		console.log(`\napres pushUndeliveredMessages\n`);
 		socket.on("message", async (event) => {
 			try {
 				// NEED AJOUT SECU NOMBRE MSG PAR SECONDE
@@ -47,40 +47,24 @@ export const websocketHandler = async function (socket, req) {
 				//	}
 				let rawText;
 
-				rawText = wsChatHandler.checkEventType(event, socket);
+				rawText = wsValidatorHandler.checkEventType(event, socket);
 				if (!rawText)
 					return;
-				wsChatHandler.checkPayloadSize(rawText, socket);
-				rawText = wsChatHandler.checkAndTrimRawText(rawText, socket);
+				wsValidatorHandler.checkPayloadSize(rawText, socket);
+				rawText = wsValidatorHandler.checkAndTrimRawText(rawText, socket);
 				if (!rawText)
 					return;
 
 				let obj = JSON.parse(rawText);
-				obj = wsChatHandler.checkJSONValidity(obj, socket, connectionsIndex, req.user.id);
-				if (!obj)
+				if (!obj.type || (obj.type !== "chat:send" && obj.type !== "auth:refresh"))
+				{
+					socket.send(JSON.stringify({ type: "error", code: "bad_request_format" }));
 					return;
-
-				let chatObj = {
-					fromUserId: req.user.id,
-					toUserId: obj.payload.toUserId,
-					content: obj.payload.content,
-					requestId: obj.requestId,
-					clientSentAt: new Date().toISOString()
-				};
-
-				let chatServiceResponse = await wsChatHandler.chatServiceCreateMessage(chatObj, req.headers.authorization);
-				console.log(`\nwebsocketHandler chat service response: ${JSON.stringify(chatServiceResponse)}\n`);
-				
-				let acknowledgement = {
-					type: "chat:sent",
-					requestId: obj.requestId,
-					messageId: chatServiceResponse.messageId,
-					createdAt: chatServiceResponse.createdAt
-				};
-				//console.log(`\nwebsocketHandler acknowledgment: ${JSON.stringify(acknowledgement)}\n`);
-				socket.send(JSON.stringify(acknowledgement));
-				
-				await wsChatHandler.deliverMessage(chatServiceResponse, req.headers.authorization);
+				}
+				if (obj.type === "chat:send")
+					await wsChatHandler.handleChatSendEvent(socket, obj);
+				else if (obj.type === "auth:refresh")
+					await wsAuthHandler.handleAuthRefreshEvent(socket, obj);
 
 			} catch (err) {
 				console.error(`\nERROR websocketHandler on message: error stack: ${err.stack},\nmessage: ${err.message}, name: ${err.name}\n`);

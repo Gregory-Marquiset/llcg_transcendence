@@ -1,54 +1,6 @@
-//import { connectionsIndex } from "./connexionRegistry.js";
+import { connectionsIndex } from "./connexionRegistry.js";
 import { getPresenceForUsers } from "../presence/presenceService.js";
 import { sessionsByUser } from "../presence/presenceStore.js";
-
-const maxChatPayloadSize = 16 * 1024;
-
-export const checkEventType = (event, socket) => {
-
-    if (typeof event === "string")
-        return (event);
-    else if (Buffer.isBuffer(event))
-        return (event.toString("utf8"));
-    else if (event instanceof Uint8Array)
-        return (Buffer.from(event).toString("utf8"));
-    else
-    {
-        socket.badFrames++;
-        if (socket.badFrames > 5)
-        {
-            socket.close(1008, "too_much_bad_frames");
-            return (null);
-        }
-        socket.send(JSON.stringify({ type: "error", code: "unsupported_frame_type" }));
-        return (null);
-    }
-}
-
-
-export const checkPayloadSize = (rawText, socket) => {
-    
-    const bytes = new TextEncoder().encode(rawText).length;
-	if (bytes > maxChatPayloadSize)
-		socket.close(1009, "payload_too_large");
-}
-
-
-export const checkAndTrimRawText = (rawText, socket) => {
-    rawText = rawText.trim();
-    if (rawText.length === 0)
-    {
-        socket.badFrames++;
-        if (socket.badFrames > 5)
-        {
-            socket.close(1008, "too_much_bad_frames");
-            return (null);
-        }
-        socket.send(JSON.stringify({ type: "error", code: "empty_message" }));
-        return (null);
-    }
-    return (rawText);
-}
 
 
 export const checkJSONValidity = (obj, socket, connectionsIndex, actualUserId) => {
@@ -101,7 +53,7 @@ export const checkJSONValidity = (obj, socket, connectionsIndex, actualUserId) =
 
 
 export const chatServiceCreateMessage = async function (chatObj, token) {
-    const response = await fetch("http://chat-service:5000/api/v1/chat/messages", {
+    const response = await fetch("http://chat-service:5000/messages", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -135,7 +87,7 @@ export const deliverMessage = async function (chatServiceResponse, token) {
             socket.send(JSON.stringify(event));
         });
 
-        let response = await fetch("http://chat-service:5000/api/v1/chat/messages/delivered", {
+        let response = await fetch("http://chat-service:5000/messages/delivered", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -159,7 +111,8 @@ export const deliverMessage = async function (chatServiceResponse, token) {
 
 
 export const pushUndeliveredMessages = async function (token) {
-    let response = await fetch("http://chat-service:5000/api/v1/chat/messages/undelivered", {
+    console.log(`\npushUndeliveredMessages\n`);
+    let response = await fetch("http://chat-service:5000/messages/undelivered", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -167,6 +120,7 @@ export const pushUndeliveredMessages = async function (token) {
         }
     });
     if (!response.ok) {
+        console.log(`\npushUndeliveredMessages response.status: ${response.status}\n`);
         let err = new Error(response.statusText);
         err.statusCode = response.status;
         throw err;
@@ -181,4 +135,34 @@ export const pushUndeliveredMessages = async function (token) {
             undeliveredMessage: ${JSON.stringify(undeliveredMessage)}\n`);
         deliverMessage(undeliveredMessage, token);
     });
+}
+
+
+export const handleChatSendEvent = async function (socket, obj) {
+    console.log(`\nhandleChatSendEvent\n`);
+    obj = checkJSONValidity(obj, socket, connectionsIndex, socket.userId);
+    if (!obj)
+        return;
+
+    let chatObj = {
+        fromUserId: socket.userId,
+        toUserId: obj.payload.toUserId,
+        content: obj.payload.content,
+        requestId: obj.requestId,
+        clientSentAt: new Date().toISOString()
+    };
+
+    let chatServiceResponse = await chatServiceCreateMessage(chatObj, socket.currentToken);
+    console.log(`\nwebsocketHandler chat service response: ${JSON.stringify(chatServiceResponse)}\n`);
+    
+    let acknowledgement = {
+        type: "chat:sent",
+        requestId: obj.requestId,
+        messageId: chatServiceResponse.messageId,
+        createdAt: chatServiceResponse.createdAt
+    };
+    //console.log(`\nwebsocketHandler acknowledgment: ${JSON.stringify(acknowledgement)}\n`);
+    socket.send(JSON.stringify(acknowledgement));
+    
+    await deliverMessage(chatServiceResponse, socket.currentToken);
 }

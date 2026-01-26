@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import { app } from '../server.js';
-import { connectionsIndex } from './connexionRegistry.js';
 
 const checkJSONValidity = (obj, socket, connectionsIndex, actualUserId) => {
 	if (obj?.type !== "auth:refresh" || !obj?.requestId || !obj?.payload
@@ -10,7 +9,13 @@ const checkJSONValidity = (obj, socket, connectionsIndex, actualUserId) => {
             return (null);
     }
 
-	if (connectionsIndex.get(socket).userId !== actualUserId)
+	let userId = connectionsIndex.get(socket).userId;
+	if (!userId)
+	{
+		socket.send(JSON.stringify({ type: "error", code: "internal_server_error" }));
+		return (null);
+	}
+	if (userId !== actualUserId)
     {
         socket.close(1008, "unauthorized");
         return (null);
@@ -37,7 +42,7 @@ const checkJSONValidity = (obj, socket, connectionsIndex, actualUserId) => {
     return (obj);
 }
 
-export const handleAuthRefreshEvent = async function (socket, obj) {
+export const handleAuthRefreshEvent = async function (socket, obj, connectionsIndex) {
 	try {
 		console.log(`\nhandleAuthRefreshEvent\n`);
 		obj = checkJSONValidity(obj, socket, connectionsIndex, socket.userId);

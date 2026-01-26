@@ -26,7 +26,11 @@ export const checkPayloadSize = (rawText, socket) => {
     
     const bytes = new TextEncoder().encode(rawText).length;
 	if (bytes > maxChatPayloadSize)
+    {
 		socket.close(1009, "payload_too_large");
+        return (false);
+    }
+    return (true);
 }
 
 

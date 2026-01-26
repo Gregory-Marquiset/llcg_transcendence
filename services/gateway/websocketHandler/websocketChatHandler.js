@@ -1,4 +1,3 @@
-import { connectionsIndex } from "./connexionRegistry.js";
 import { getPresenceForUsers } from "../presence/presenceService.js";
 import { sessionsByUser } from "../presence/presenceStore.js";
 
@@ -17,7 +16,13 @@ const checkJSONValidity = (obj, socket, connectionsIndex, actualUserId) => {
         return (null);
     }
 
-    if (connectionsIndex.get(socket).userId !== actualUserId)
+    let userId = connectionsIndex.get(socket).userId;
+	if (!userId)
+	{
+		socket.send(JSON.stringify({ type: "error", code: "internal_server_error" }));
+		return (null);
+	}
+    if (userId !== actualUserId)
     {
         socket.close(1008, "unauthorized");
         return (null);
@@ -130,15 +135,15 @@ export const pushUndeliveredMessages = async function (token) {
         undeliveredMessages: ${JSON.stringify(undeliveredMessages)}\n`);
     if (!undeliveredMessages)
         return;
-    undeliveredMessages.forEach((undeliveredMessage) => {
+    undeliveredMessages.forEach(async (undeliveredMessage) => {
         console.log(`\npushUndeliveredMessage in for each, typeof : ${typeof undeliveredMessage}
             undeliveredMessage: ${JSON.stringify(undeliveredMessage)}\n`);
-        deliverMessage(undeliveredMessage, token);
+        await deliverMessage(undeliveredMessage, token);
     });
 }
 
 
-export const handleChatSendEvent = async function (socket, obj) {
+export const handleChatSendEvent = async function (socket, obj, connectionsIndex) {
     console.log(`\nhandleChatSendEvent\n`);
     obj = checkJSONValidity(obj, socket, connectionsIndex, socket.userId);
     if (!obj)

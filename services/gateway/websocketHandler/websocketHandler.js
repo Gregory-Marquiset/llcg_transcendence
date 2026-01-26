@@ -50,7 +50,8 @@ export const websocketHandler = async function (socket, req) {
 				rawText = wsValidatorHandler.checkEventType(event, socket);
 				if (!rawText)
 					return;
-				wsValidatorHandler.checkPayloadSize(rawText, socket);
+				if (wsValidatorHandler.checkPayloadSize(rawText, socket) === false)
+					return;
 				rawText = wsValidatorHandler.checkAndTrimRawText(rawText, socket);
 				if (!rawText)
 					return;
@@ -62,9 +63,9 @@ export const websocketHandler = async function (socket, req) {
 					return;
 				}
 				if (obj.type === "chat:send")
-					await wsChatHandler.handleChatSendEvent(socket, obj);
+					await wsChatHandler.handleChatSendEvent(socket, obj, connectionsIndex);
 				else if (obj.type === "auth:refresh")
-					await wsAuthHandler.handleAuthRefreshEvent(socket, obj);
+					await wsAuthHandler.handleAuthRefreshEvent(socket, obj, connectionsIndex);
 
 			} catch (err) {
 				console.error(`\nERROR websocketHandler on message: error stack: ${err.stack},\nmessage: ${err.message}, name: ${err.name}\n`);
@@ -82,26 +83,11 @@ export const websocketHandler = async function (socket, req) {
 					return;
 				}
 				else if (err.statusCode === 403)
-				{
-					socket.badFrames++;
-					if (socket.badFrames > 5)
-						socket.close(1008, "too_much_bad_frames");
 					socket.send(JSON.stringify({ type: "error", code: "invalid_friendships" }));
-				}
 				else if (err.statusCode === 404)
-				{
-					socket.badFrames++;
-					if (socket.badFrames > 5)
-						socket.close(1008, "too_much_bad_frames");
 					socket.send(JSON.stringify({ type: "error", code: "users_not_found" }));
-				}
 				else if (err.statusCode === 409)
-				{
-					socket.badFrames++;
-					if (socket.badFrames > 5)
-						socket.close(1008, "too_much_bad_frames");
 					socket.send(JSON.stringify({ type: "error", code: "request_id_already_used" }));
-				}
 				else
 					socket.send(JSON.stringify({ type: "error", code: "internal_error" }));
 			}
@@ -118,7 +104,7 @@ export const websocketHandler = async function (socket, req) {
 		console.error(`\nERROR websocketHandler: error code: ${err.code}, message: ${err.message}\n`);
 		if (err.code === "FST_JWT_AUTHORIZATION_TOKEN_EXPIRED")
 			socket.close(1008, "token_expired");
-		else if (err.code.startWith("FST_JWT_") || err.code.startsWith("FAST_JWT_"))
+		else if (typeof err?.code === "string" && (err.code.startsWith("FST_JWT_") || err.code.startsWith("FAST_JWT_")))
 			socket.close(1008, "unauthorized");
 		else
 			socket.close();
@@ -130,9 +116,9 @@ export const heartbeat = function () {
 	connectionsIndex?.forEach((value, key) => {
 		if (!key)
 			return;
-		console.log(`value.userId: ${value.userId}`);
-		console.log(`value.connectionId: ${value.connectionId}`);
-		console.log(`value.ip: ${value.ip}\n`);
+		// console.log(`value.userId: ${value.userId}`);
+		// console.log(`value.connectionId: ${value.connectionId}`);
+		// console.log(`value.ip: ${value.ip}\n`);
 		if (key.isAlive === false)
 		{
 			key.terminate();

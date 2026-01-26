@@ -85,7 +85,6 @@ info:
 	@echo ""
 	@echo "Frontend:	http://localhost:5173"
 	@echo "Fastify docs:	http://localhost:5000/docs"
-	@echo "Backend metrics:	http://localhost:5000/metrics"
 	@echo "Adminer:	http://localhost:8080"
 	@echo "Prometheus:	http://localhost:9090"
 	@echo "Grafana:	http://localhost:3000"

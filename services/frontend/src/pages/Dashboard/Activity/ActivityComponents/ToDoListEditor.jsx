@@ -1,6 +1,6 @@
 import '../Activity.css'
 import { Button } from '../../../../components'
-import { useState, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 const data = [
     {
@@ -29,27 +29,70 @@ const data = [
 export default function ToDoListEditor(){
     const [title, setTitle]= useState('');
     const [description, setDescription]= useState('');
-    const  [deadline, setDeadline] = useState('');
-    const inputTitle = useRef();
-    const inputDeadline = useRef();
-    const inputDescription = useRef();
-    const newTask = (() =>{
+    const [todo, setTodo] = useState([]);
+    const accessToken = localStorage.getItem('access_token');
+    const fetchTodo = async () => {
+        try{
+            const response = await fetch('/api/v1/statistics/todo', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+            if (!response.ok){
+                console.log("error while fetchin todo");
+                return ;
+            }
+            const hey = await response.json();
+            setTodo(hey);
+            fetchTodo();
+        }
+        catch (err){
+            console.error(err);
+        }
+    };
+    useEffect(() => {
+        if (accessToken)
+            fetchTodo();
+    }, []);
+    const newTask = async () => {
+    if (!title) {
+        alert("The title is mandatory");
+        return;
+    }
+    try {
+        const response = await fetch('/api/v1/statistics/todo', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ title, description })
+        });
+        
+        if (!response.ok) throw new Error('Failed to create todo');
+        
+        const data = await response.json();
+        console.log("Todo created:", data);
+        setTitle('');
+        setDescription('');
+        
+        } catch (err) {
+            console.error("Error:", err);
+        }
+    }
 
-    })
     return <>
             <div className='todolist-editor-container'>
                 <h3>   To do list editor</h3>
                 <div className='todo' key='0'>
                     <h3>    Add a new task :</h3>
                     <h4> Titre</h4>
-                    <input ref={inputTitle} className='input-new-todo'></input>
+                    <input onChange={(e) => setTitle(e.target.value)} className='input-new-todo'></input>
                     <h4> Description</h4>
-                    <input ref={inputDescription} className='input-new-todo'></input>
-                    <h4> Deadline</h4>
-                    <input ref={inputDeadline} className='input-new-todo'></input>
-                    <Button onClick={newTask} text="Add"/>
+                    <input onChange={(e) => setDescription(e.target.value)} className='input-new-todo'></input>                    <Button onClick={newTask} text="Add"/>
                 </div>
-                    {data.map((element) => (
+                    {todo.map((element) => (
             <div className='todo-tile-editor' key={element.id}>
                     <div className='todo-title-editor' >{element.title}</div>
                     <p className='todo-description'>Description : {element.description} </p>

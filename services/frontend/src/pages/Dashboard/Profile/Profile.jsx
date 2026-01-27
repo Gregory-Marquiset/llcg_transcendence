@@ -89,7 +89,7 @@ const avatarUrl = userData.avatar_path && !onError
     ? `http://localhost:5000/uploads/avatar/${userData.avatar_path}`
     : profilepicture;
 
-  if (loading) return <Loading duration={400}  showButton={false}/>
+  // if (loading) return <Loading duration={400}  showButton={false}/>
   return (
     <>
       <Background>

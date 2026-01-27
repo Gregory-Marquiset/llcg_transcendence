@@ -8,9 +8,10 @@ export const authRegister = async function (req, reply) {
 	try {
 		const hashedPWD = await app.bcrypt.hash(req.body.password);
 
-		await runSql(app.pg, `INSERT INTO users(username, email, password, avatar_path) 
-			VALUES ($1, $2, $3, $4)`, [req.body.username, req.body.email, hashedPWD, "avatar/default.jpg"]);
-		
+		const userResult = await runSql(app.pg, 
+			`INSERT INTO users(username, email, password, avatar_path) 
+			VALUES ($1, $2, $3, $4) RETURNING id`, 
+			[req.body.username, req.body.email, hashedPWD, "avatar/default.jpg"]);
 		return (reply.code(201).send({message: "New entry in database"}));
 	} catch (err) {
 		console.error(`\nERROR authRegister: ${err.message}\n`);
@@ -25,6 +26,42 @@ export const authRegister = async function (req, reply) {
 	}
 }
 
+// export const authRegister = async function (req, reply) {
+// 	console.log(`\n${JSON.stringify(req.body)}\n`);
+
+// 	try {
+// 		const hashedPWD = await app.bcrypt.hash(req.body.password);
+
+// 		const userResult = await runSql(
+// 			app.pg, 
+// 			`INSERT INTO users(username, email, password, avatar_path) 
+// 			VALUES ($1, $2, $3, $4) RETURNING id`,  // 👈 PAS DE VIRGULE !
+// 			[req.body.username, req.body.email, hashedPWD, "avatar/default.jpg"]
+// 		);
+		
+// 		const newUserId = userResult.rows[0].id;
+		
+// 		await runSql(
+// 			app.pg,
+// 			`INSERT INTO user_stats(user_id, last_login)
+// 			VALUES ($1, CURRENT_TIMESTAMP)`,
+// 			[newUserId]
+// 		);
+		
+// 		return reply.code(201).send({message: "User created successfully"});
+		
+// 	} catch (err) {
+// 		console.error(`\nERROR authRegister: ${err.message}\n`);
+		
+// 		if (err.code === '23505') {
+// 			err.statusCode = 409;
+// 			err.message = "Username or email already exists";
+// 		} else {
+// 			err.statusCode = 500;
+// 		}
+// 		throw err;
+// 	}
+// }
 
 export const authRegister42 = async function (req, reply) {
 	console.log(`\n${JSON.stringify(req.body)}\n`);
@@ -152,6 +189,14 @@ export const authMe = async function (req, reply) {
 			userStats = await getRowFromDB(app.pg, 'SELECT rank_position, task_completed, friends_count, streaks_history, current_streak_count, monthly_logtime, monthly_logtime_month, app_seniority, upload_count, created_at, updated_at, last_login FROM user_stats WHERE user_id = $1',
 			[req.user.id]);
 		}
+		const created_at = new Date(userStats.created_at);
+        const now = new Date();
+        const newSeniority = Math.floor((now - created_at) / (1000 * 60 * 60 * 24)) + 1;
+        await runSql(app.pg, `UPDATE user_stats SET app_seniority = $1,
+                                last_login = $2,
+                                updated_at = NOW()
+                                WHERE user_id = $3`,
+                            [newSeniority, now, req.user.id]);
 		return (reply.code(200).send({...userInfos, stats : userStats}));
 	} catch (err) {
 		console.error(`\nERROR authMe: ${err.message}\n`);

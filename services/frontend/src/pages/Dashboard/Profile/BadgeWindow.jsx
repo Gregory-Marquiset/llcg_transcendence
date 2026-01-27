@@ -10,8 +10,8 @@ function computeBadgeProgress(badge, statValue) {
         if (statValue >= badge.levels[i].threshold)
             currentLevel = badge.levels[i].level;
         else if (i){
-            const prevThreshold = badges.levels[i - 1].threshold;
-            const range = badges.levels[i].threshold - prevThreshold;
+            const prevThreshold = badge.levels[i - 1].threshold;
+            const range = badge.levels[i].threshold - prevThreshold;
             const valueInRange = statValue - prevThreshold;
             progress = Math.max(0, Math.min(100, (valueInRange / range) * 100));
             break ;
@@ -30,7 +30,7 @@ export default function BadgeWindow({isLoading}){
     useEffect(() => {
       const fetchProfile = async () => {
         try {
-            isLoading(true);
+            // isLoading(true);
           const responseMe = await fetch('/api/v1/auth/me', {
             method: 'GET',
             headers: {
@@ -46,18 +46,18 @@ export default function BadgeWindow({isLoading}){
           const fetchedUserData = await responseMe.json();
           console.log(fetchedUserData);
           setStats(fetchedUserData.stats);
-          isLoading(false);
+        //   isLoading(false);
         } catch (err) {
           console.error("Fetch error:", err);
         }
       }
         if (accessToken)
           fetchProfile();
-      }, [accessToken]);
+      }, []);
 
     const computedBadges = badges.map((badge) => {
         const statValue = stats?.[badge.key] ?? 0;
-        const {level, progress} = computeBadgeProgress(badge.name, statValue);
+        const {level, progress} = computeBadgeProgress(badge, statValue);
         return {
             ...badge,
             level,

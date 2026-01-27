@@ -38,18 +38,6 @@ export function AuthProvider ({ children }) {
         setAuthUser(data.user);
         setIsLoggedIn(true);
         localStorage.setItem("access_token", data.access_token);
-        const seniority = await fetch("/api/v1/statistics/seniority", {
-                method: "PUT",
-                credentials: "include",
-                headers: {
-                    "Authorization": `Bearer ${data.access_token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (!seniority.ok) {
-                console.log("updating seniority failed");
-            }
       } catch (err) {
         console.error("Erreur refresh token :", err);
         setIsLoggedIn(false);

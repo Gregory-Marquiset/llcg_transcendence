@@ -261,29 +261,35 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
     depends_on:
-      gateway:
+      gateway-dev:
         condition: service_healthy
     networks:
-      - net_gateway
+      net_gateway:
+        aliases: ["frontend"]
     restart: unless-stopped
     profiles: ["dev"]
 
   gateway-dev:
     image: node:20-bookworm-slim
-    working_dir: /app/services/gateway
-    ports:
-      - "5000:5000"
+    working_dir: /app
     volumes:
       - ./services:/app/services
-      - gateway_node_modules:/app/services/gateway/node_modules
+      - gateway_node_modules:/app/node_modules
+    ports:
+      - "5000:5000"
     command: >
-      sh -lc "if [ ! -d node_modules ]; then npm ci; fi
-      && node --watch server.js"
+      sh -lc 'cd /app
+      && ln -sf services/gateway/package.json package.json
+      && ln -sf services/gateway/package-lock.json package-lock.json
+      && test -f node_modules/.package-lock.json || npm ci
+      && cd /app/services/gateway
+      && node --watch server.js'
     environment:
       HOST: "0.0.0.0"
       PORT: "5000"
       JWT_SECRET: "${JWT_SECRET}"
       NODE_ENV: "development"
+      CHOKIDAR_USEPOLLING: "true"
     networks:
       net_backend:
         aliases: ["gateway"]
@@ -304,23 +310,28 @@ services:
       interval: 10s
       timeout: 3s
       retries: 20
-    profiles: ["dev-back"]
+    profiles: ["dev"]
 
   auth-service-dev:
     image: node:20-bookworm-slim
-    working_dir: /app/services/auth
+    working_dir: /app
     volumes:
       - ./services:/app/services
-      - auth_node_modules:/app/services/auth/node_modules
+      - auth_node_modules:/app/node_modules
     command: >
-      sh -lc "if [ ! -d node_modules ]; then npm ci; fi
-      && node --watch authServer.js"
+      sh -lc 'cd /app
+      && ln -sf services/auth/package.json package.json
+      && ln -sf services/auth/package-lock.json package-lock.json
+      && test -f node_modules/.package-lock.json || npm ci
+      && cd /app/services/auth
+      && node --watch authServer.js'
     environment:
       HOST: "0.0.0.0"
       PORT: "5000"
       JWT_SECRET: "${JWT_SECRET}"
       DATABASE_URL: "${DATABASE_URL}"
       NODE_ENV: "development"
+      CHOKIDAR_USEPOLLING: "true"
     networks:
       net_backend:
         aliases: ["auth-service"]
@@ -341,23 +352,28 @@ services:
       interval: 10s
       timeout: 3s
       retries: 20
-    profiles: ["dev-back"]
+    profiles: ["dev"]
 
   users-service-dev:
     image: node:20-bookworm-slim
-    working_dir: /app/services/users
+    working_dir: /app
     volumes:
       - ./services:/app/services
-      - users_node_modules:/app/services/users/node_modules
+      - users_node_modules:/app/node_modules
     command: >
-      sh -lc "if [ ! -d node_modules ]; then npm ci; fi
-      && node --watch usersServer.js"
+      sh -lc 'cd /app
+      && ln -sf services/users/package.json package.json
+      && ln -sf services/users/package-lock.json package-lock.json
+      && test -f node_modules/.package-lock.json || npm ci
+      && cd /app/services/users
+      && node --watch usersServer.js'
     environment:
       HOST: "0.0.0.0"
       PORT: "5000"
       JWT_SECRET: "${JWT_SECRET}"
       DATABASE_URL: "${DATABASE_URL}"
       NODE_ENV: "development"
+      CHOKIDAR_USEPOLLING: "true"
     networks:
       net_backend:
         aliases: ["users-service"]
@@ -378,7 +394,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 20
-    profiles: ["dev-back"]
+    profiles: ["dev"]
 
 ### Config
 

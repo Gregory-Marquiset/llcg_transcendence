@@ -153,6 +153,8 @@ clean:
 
 nuke:
 	@$(COMPOSE) --profile dev down -v --remove-orphans --rmi local
+	rm -rf ./services/vault/data
+	rm -f ./services/vault/config/init-key.json
 	@if [ -L services/frontend/node_modules ]; then rm -f services/frontend/node_modules; fi
 
 total-nuke: nuke

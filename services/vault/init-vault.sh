@@ -15,11 +15,9 @@ VAULT_PID=$!
 
 export VAULT_ADDR='http://127.0.0.1:8200'
 
-echo "En attente du serveur..."
-until vault status > /dev/null 2>&1; do
-    stat=$?
-    if [ $stat -ne 2 ]; then break; fi
-    sleep 1
+echo "Attente que Vault soit démarré et prêt..."
+until vault status -format=json 2>/dev/null | jq -e '.initialized == true' >/dev/null; do
+  sleep 1
 done
 
 # -----------------------------------------------------------------------------
@@ -89,24 +87,30 @@ else
     echo "ℹMoteur Database déjà actif."
 fi
 
-echo "Configuration de la connexion Postgres..."
-vault write database/config/postgresql \
-    plugin_name=postgresql-database-plugin \
-    allowed_roles="app-role" \
-    connection_url="postgresql://{{username}}:{{password}}@postgres:5432/transcendance_database?sslmode=disable" \
-    username="${POSTGRES_USER}" \
-    password="${POSTGRES_PASSWORD}"
+if ! vault read database/config/postgresql >/dev/null 2>&1; then
+    echo "Configuration de la connexion Postgres..."
+    vault write database/config/postgresql \
+        plugin_name=postgresql-database-plugin \
+        allowed_roles="app-role" \
+        connection_url="postgresql://{{username}}:{{password}}@postgres:5432/transcendance_database?sslmode=disable" \
+        username="${POSTGRES_USER}" \
+        password="${POSTGRES_PASSWORD}"
+else
+    echo "Une connexion a postgres existe deja"
+fi
 
 echo "Création du rôle 'app-role'..."
 vault write database/roles/app-role \
     db_name=postgresql \
-    creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
+creation_statements="CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; \
         GRANT CONNECT ON DATABASE transcendance_database TO \"{{name}}\"; \
         GRANT USAGE, CREATE ON SCHEMA public TO \"{{name}}\"; \
         GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO \"{{name}}\"; \
         GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO \"{{name}}\";" \
-    default_ttl="1h" \
-    max_ttl="24h"
+    revocation_statements="REASSIGN OWNED BY \"{{name}}\" TO \"${POSTGRES_USER}\"; \
+        DROP OWNED BY \"{{name}}\";" \
+    default_ttl="1m" \
+    max_ttl="10m"
 
 vault write -force database/rotate-root/postgresql
 

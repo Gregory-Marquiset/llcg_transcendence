@@ -29,6 +29,11 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
 ### SECURITY
 
@@ -115,6 +120,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      vault:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test:
@@ -143,6 +150,8 @@ services:
       gateway:
         condition: service_healthy
       postgres:
+        condition: service_healthy
+      vault:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:

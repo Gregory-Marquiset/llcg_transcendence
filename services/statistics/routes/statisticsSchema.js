@@ -61,13 +61,26 @@ export const postNewTodoOpts = {
 export const deleteTodoOpts = {
     schema : {
         headers : {
-            authorization : { type : "string"},
+            type : "object",
+            properties : {
+                authorization : { type : "string"},
+            },
+            required : ['authorization']
+            
+        },
+        params : {
+            type : "object",
+            properties :{
+                id : { type : "integer"},
+            },
+            required : ['id'],
         },
         response : {
-            200 : {
-                type : "object"
+            204 : {
+                type : "null",
             }
-        } 
-        
-    }
+        }
+    },
+    handler : statisticsController.deleteTodo
 }
+

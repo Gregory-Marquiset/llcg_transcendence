@@ -21,7 +21,18 @@ export const postNewTodo = async function (req, reply) {
         return reply.code(201).send({id})
     }
     catch (err){
-        console.error("While posting new todo :" , err)
+        console.error("ERROR: posting new todo :" , err)
         return reply.code(500).send({ error: 'Failed to create todo' });
+    }
+}
+
+export const deleteTodo = async function (req, reply) {
+    try {
+        const response = await runSql(app.pg, `DELETE FROM todo_list WHERE id = $1 AND user_id = $2`, [req.params.id, req.user.id]);
+        return reply.code(204).send();
+    }
+    catch (err){
+        console.error("ERROR: deleting new todo :" , err);
+        return reply.code(500).send({ error: 'Failed to delete todo' });
     }
 }

@@ -185,12 +185,14 @@
 }
 
 .todo-title-editor{
-    font-size: 25px;
-    
+    display: flex;
+    flex-direction: row;
 }
 
 .todo-tile-editor{
     border: 1px solid #eab2bb;
+    display: flex;
+    flex-direction: row;
     border-radius: 10px;
     margin: 5px;
     padding: 5px;
@@ -291,4 +293,31 @@
 .day-details h3{
     margin-top: 10px;
     font-size: 20px;
+}
+
+.delete-todo{
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    text-align: center;
+    right : 10px;
+    padding : 0px;
+    font-weight: 900;
+}
+
+.split-todo-container{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.split-todo-container h3 {
+    font-weight: 500;
+}
+
+.delete-container {
+    display: flex;
+    align-items: flex-end;
+    align-self: center;
+    /* right : 10px; */
 }

@@ -2,30 +2,6 @@ import '../Activity.css'
 import { Button } from '../../../../components'
 import { useState, useEffect } from 'react'
 
-const data = [
-    {
-        id: 1,
-        title : "Readme",
-        done : 0,
-        description : 'faire le readme pour Minishell',
-        deadline : '01/02/2026'
-    },
-    {
-        id: 2,
-        title : "Correction",
-        done : 0,
-        description : 'Corriger philo',
-        deadline : '30/01/2026'
-    },
-    {
-        id: 3,
-        title : "Révisions",
-        done : 0,
-        description : "réviser l'exam",
-        deadline : '01/02/2026'
-    }
-]
-
 export default function ToDoListEditor(){
     const [title, setTitle]= useState('');
     const [description, setDescription]= useState('');
@@ -43,9 +19,8 @@ export default function ToDoListEditor(){
                 console.log("error while fetchin todo");
                 return ;
             }
-            const hey = await response.json();
-            setTodo(hey);
-            fetchTodo();
+            const data = await response.json();
+            setTodo(data);
         }
         catch (err){
             console.error(err);
@@ -76,12 +51,34 @@ export default function ToDoListEditor(){
         console.log("Todo created:", data);
         setTitle('');
         setDescription('');
-        
+        await fetchTodo();
         } catch (err) {
             console.error("Error:", err);
         }
     }
-
+    const deleteTask = async (id) => {
+        if (!id){
+            alert("No task to delete");
+            return ;
+        }
+        try {
+            const response = await fetch(`/api/v1/statistics/todo/${id}`, {
+                method : "DELETE",
+                headers : {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+            if (!response.ok){
+                console.log("Reponse of fetch is not ok");
+                return ;
+            }
+            console.log("The task is deleted");
+            await fetchTodo();
+        }
+        catch (err){
+            console.error("Error while deleting task : ", err);
+        }
+    }
     return <>
             <div className='todolist-editor-container'>
                 <h3>   To do list editor</h3>
@@ -94,8 +91,13 @@ export default function ToDoListEditor(){
                 </div>
                     {todo.map((element) => (
             <div className='todo-tile-editor' key={element.id}>
-                    <div className='todo-title-editor' >{element.title}</div>
+                <div className='split-todo-container'>
+                    <h3>{element.title}</h3>
                     <p className='todo-description'>Description : {element.description} </p>
+                </div>
+                <div className='delete-container'>
+                    <button className='delete-todo' onClick={() => deleteTask(element.id)}>X</button>
+                </div>
                     {element.done === 1 && <p>Task completed</p>}
                 </div>))}
             </div>

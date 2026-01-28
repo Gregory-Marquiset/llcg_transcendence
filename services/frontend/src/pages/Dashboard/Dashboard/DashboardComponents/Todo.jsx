@@ -26,6 +26,30 @@ export default function Todo (){
             console.error(err);
         }
     };
+    const markAsDone = async (element) => {
+        let done = true;
+        if (element.done == true)
+            done = false;
+        try {
+            const response = await fetch(`/api/v1/statistics/todo/${element.id}`, {
+                method : "PATCH", 
+                headers : {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body : JSON.stringify({done}),
+            });
+            await fetchTodo();
+            if (!response.ok){
+                console.error("While marking as done task");
+                return ;
+            }
+            console.log("coucou");
+        }
+        catch (err){
+            console.error("ERROR : ", err);
+        };
+    };
     useEffect(() => {
         if (accessToken)
             fetchTodo();
@@ -35,14 +59,14 @@ export default function Todo (){
         <h3>   You have {todo.length} tasks</h3>
         { todo.length === 0 && <Button text="Add some" onClick={() => navigate('/dashboard/activity')}/>}
         {todo.map((element) => (
-           <div className='todo' key={element.id}>
+            <div className='todo' key={element.id}>
                 <div className='todo-title' >{element.title}</div>
                 <p className='todo-description'>Description : {element.description} </p>
                 {element.done !== 1 && <div className="checkbox-wrapper-5">
-                <div className="check">
-                    <input id={`check-${element.id}`} type="checkbox"/>
-                    <label htmlFor="check-5"></label>
-                </div>
+                    <div className="check" onClick={() => {markAsDone(element)}}>
+                        <input id={element.id} type="checkbox" checked={element.done}/>
+                        <label htmlFor={element.id} />
+                    </div>
                 </div>}
                 {element.done === 1 && <p>Task completed</p>}
             </div>))}

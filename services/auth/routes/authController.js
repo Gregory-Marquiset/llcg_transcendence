@@ -152,10 +152,10 @@ export const authMe = async function (req, reply) {
 			[req.user.id]);
 		}
 		let userTodo = await getRowFromDB(app.pg, 'SELECT id FROM todo_list WHERE user_id = $1', [req.user.id]);
-		if (!userTodo){
-			await runSql(app.pg, 'INSERT INTO todo_list (user_id, title) VALUES ($1, $2)', [req.user.id, "Random task"]);
-			userTodo = await getRowFromDB(app.pg, 'SELECT id FROM todo_list WHERE user_id = $1', [req.user.id]);
-		}
+		// if (!userTodo){
+		// 	await runSql(app.pg, 'INSERT INTO todo_list (user_id, title) VALUES ($1, $2)', [req.user.id, "Add your first to do ! ✅"]);
+		// 	userTodo = await getRowFromDB(app.pg, 'SELECT id FROM todo_list WHERE user_id = $1', [req.user.id]);
+		// }
 		const created_at = new Date(userStats.created_at);
         const now = new Date();
         const newSeniority = Math.floor((now - created_at) / (1000 * 60 * 60 * 24)) + 1;

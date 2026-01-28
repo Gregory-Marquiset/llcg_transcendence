@@ -84,3 +84,40 @@ export const deleteTodoOpts = {
     handler : statisticsController.deleteTodo
 }
 
+export const markAsDoneOpts = {
+    schema : {
+        headers : {
+            type : 'object',
+            properties : {
+                authorization : { type : "string" },
+            },
+            required : ["authorization"],
+        },
+        params : {
+            type : "object",
+            properties : {
+                id : {type : "integer"}
+            },
+            required : ["id"],
+        },
+        body : {
+            type : "object",
+            properties :{
+                done : { type : "boolean"},
+            },
+            required : ["done"],
+        },
+        response : {
+            204 : {
+                type : "null" ,
+            },
+            404 : {
+                type : "object",
+                properties : {
+                    error : {type : "string"},
+                }
+            }
+        }
+    },
+    handler : statisticsController.markAsDone
+}

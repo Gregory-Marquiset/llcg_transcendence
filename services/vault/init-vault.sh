@@ -15,11 +15,11 @@ VAULT_PID=$!
 
 export VAULT_ADDR='http://127.0.0.1:8200'
 
-echo "Attente que Vault soit démarré et prêt..."
-until vault status -format=json 2>/dev/null | jq -e '.initialized == true' >/dev/null; do
+echo "Attente que le processus Vault réponde..."
+until vault status > /dev/null 2>&1 || [ $? -ne 127 ]; do
+  echo "En attente de Vault..."
   sleep 1
 done
-
 # -----------------------------------------------------------------------------
 # 2. INITIALISATION (Si nécessaire)
 # -----------------------------------------------------------------------------
@@ -142,6 +142,52 @@ mkdir -p /vault/secrets
 # On écrit un fichier JSON que le backend pourra lire
 echo "{\"role_id\":\"$(vault read -field=role_id auth/approle/role/backend-role/role-id)\", \"secret_id\":\"$(vault write -field=secret_id -f auth/approle/role/backend-role/secret-id)\"}" > /vault/secrets/approle.json
 chmod 666 /vault/secrets/approle.json
+
+
+vault secrets enable pki
+vault secrets tune -max-lease-ttl=8760h pki
+
+# Générer la CA interne
+vault write pki/root/generate/internal \
+    common_name="42tracker.local" \
+    ttl=8760h
+
+vault write pki/config/urls \
+    issuing_certificates="http://vault:8200/v1/pki/ca" \
+    crl_distribution_points="http://vault:8200/v1/pki/crl"
+
+vault write pki/roles/backend \
+    allowed_domains="gateway,auth,users" \
+    allow_subdomains=true \
+    allow_bare_domains=true \
+    max_ttl="8760h"
+
+TTL="720h"
+OUT="/vault/secrets"
+ROLE="backend"
+
+services="
+gateway:gateway
+users:users
+auth:auth
+"
+
+for entry in $services; do
+  NAME=$(echo "$entry" | cut -d: -f1)
+  CN=$(echo "$entry" | cut -d: -f2)
+
+  echo "🔐 Issuing cert for $NAME ($CN)"
+
+  vault write -format=json pki/issue/$ROLE \
+    common_name="$CN" \
+    ttl="$TTL" > "$OUT/${NAME}_raw.json"
+
+  jq -r '.data.certificate' "$OUT/${NAME}_raw.json" > "$OUT/${NAME}.crt"
+  jq -r '.data.private_key' "$OUT/${NAME}_raw.json" > "$OUT/${NAME}.key"
+  jq -r '.data.issuing_ca'  "$OUT/${NAME}_raw.json" > "$OUT/ca.crt"
+
+#   rm "$OUT/${NAME}_raw.json"
+done
 
 echo "✅ Vault est prêt !"
 echo "🔑 ROOT TOKEN: $ROOT_TOKEN"

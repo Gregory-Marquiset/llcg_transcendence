@@ -134,14 +134,10 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "node -e \"require('http').get('http://127.0.0.1:5000/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))\""
-        ]
+      test: ["CMD-SHELL", "curl -k https://127.0.0.1:5000/health || exit 1"]
       interval: 10s
-      timeout: 3s
-      retries: 20
+      timeout: 5s
+      retries: 5
 
   auth-service:
     build:
@@ -166,14 +162,10 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "node -e \"require('http').get('http://127.0.0.1:5000/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))\""
-        ]
+      test: ["CMD-SHELL", "curl -k https://127.0.0.1:5000/health || exit 1"]
       interval: 10s
-      timeout: 3s
-      retries: 20
+      timeout: 5s
+      retries: 5
 
   users-service:
     build:
@@ -197,14 +189,10 @@ services:
     restart: unless-stopped
     # volume: users_avatar_data:/app/users/uploads/avatar
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "node -e \"require('http').get('http://127.0.0.1:5000/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))\""
-        ]
+      test: ["CMD-SHELL", "curl -k https://127.0.0.1:5000/health || exit 1"]
       interval: 10s
-      timeout: 3s
-      retries: 20
+      timeout: 5s
+      retries: 5
 
 ### Frontend
 

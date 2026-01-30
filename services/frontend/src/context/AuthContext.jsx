@@ -21,7 +21,6 @@ export function AuthProvider ({ children }) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const checkRefreshToken = async () => {
-      console.log("REFREEESH");
       if (!localStorage.getItem("access_token"))
           return ;
       try {

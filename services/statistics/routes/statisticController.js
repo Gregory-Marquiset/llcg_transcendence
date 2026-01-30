@@ -81,3 +81,17 @@ export const getHistory = async function (req, reply) {
         return reply.code(500).send({ error : "Failed to fetch user's history"})
     }
 }
+
+export const getWeeklyLogtime = async function (req, reply) {
+    try {
+        const weeklySummary = await getAllRowsFromDb(app.pg, `SELECT d.day, COALESCE(dl.logtime_second, 0) / 60.0 AS logtime
+            FROM generate_series(CURRENT_DATE - INTERVAL '6 days',
+            CURRENT_DATE, INTERVAL '1 day') as d(day)
+            LEFT JOIN daily_logtime dl ON dl.day = d.day AND dl.user_id = $1 ORDER BY d.day`, [req.user.id]);
+        return reply.code(200).send(weeklySummary);
+    }
+    catch (err){
+        console.error("While fetching weekly : ", err)
+        return reply.code(500).send({ error : "Failed to fetch user's weekly logtime history"});
+    }
+}

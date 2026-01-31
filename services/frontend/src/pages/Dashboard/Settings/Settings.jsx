@@ -17,7 +17,7 @@ function Settings() {
       <Background>
         <div className="page-wrapper">
           <HeaderBar />
-          <div className="content-wrapper">
+          <div className="setting-wrapper">
             <h2 className="settings-title">
               <LogTitle text="Réglages" />
             </h2>

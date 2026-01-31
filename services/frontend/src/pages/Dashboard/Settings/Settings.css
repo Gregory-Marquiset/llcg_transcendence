@@ -9,17 +9,18 @@
 
 }
 .settings-title {
-    display: content;
-    flex-wrap: nowrap;
+    /* display: content; */
+    /* flex-wrap: nowrap; */
   background-color: whitesmoke;
   border: solid #858585 3px;
   border-radius: 20px;
   margin-bottom: 30px;
   font-size: 32px;
   width: 300px;
-
+  /* padding : 20px; */
   color: #545454;
   text-align: center;
+  height: 100px;
   font-family: Arial, Helvetica, sans-serif;
   filter: drop-shadow(0 2px 2px #545454);
     animation: slideIn 0.4s ease-out;
@@ -74,4 +75,12 @@ section:hover{
   text-align: center;
   filter: drop-shadow(0 2px 2px #545454);
   margin: 10px;
+}
+
+.setting-wrapper{
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+  padding: 50px;
 }

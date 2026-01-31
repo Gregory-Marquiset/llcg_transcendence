@@ -154,3 +154,28 @@ export const getHistoryOpts = {
     },
     handler: statisticsController.getHistory
 }
+
+export const getWeeklyLogtimeOpts = {
+    schema : {
+        headers : {
+            type : "object",
+            properties : {
+                authorization : {type : "string"},
+            },
+            required : ["authorization"],
+        },
+        response : {
+            200 : {
+                type : "array",
+                items : {
+                    type : "object",
+                    properties : {
+                        day : {type : "string"},
+                        logtime : {type : "number"},
+                    }
+                }
+            }
+        }
+    },
+    handler : statisticsController.getWeeklyLogtime
+}

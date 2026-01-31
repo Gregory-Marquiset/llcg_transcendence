@@ -34,10 +34,10 @@ function Settings() {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="btn-setting">Changer mon mot de passe</div>
-                    <div className="btn-setting">
+                    <button className="btn-setting">Changer mon mot de passe</button>
+                    <button className="btn-setting">
                       Activer l'authentification a deux facteurs
-                    </div>
+                    </button>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -53,9 +53,9 @@ function Settings() {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="btn-setting">
+                    <button className="btn-setting">
                       Désactiver les notifications
-                    </div>
+                    </button>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -70,9 +70,9 @@ function Settings() {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="btn-setting">Choisir Francais</div>
-                    <div className="btn-setting">Choisir Anglais</div>
-                    <div className="btn-setting">Choisir Espagnol</div>
+                    <button className="btn-setting">Choisir Francais</button>
+                    <button className="btn-setting">Choisir Anglais</button>
+                    <button className="btn-setting">Choisir Espagnol</button>
                   </motion.div>
                 )}
               </AnimatePresence>

@@ -73,11 +73,23 @@ export const getMeOpts = {
                                 type : "string",
                                 enum : ["pending", "accepted", "refused", "blocked", "removed"]
                             },
-                            created_at : {type : "string" },
-                            updated_at : {type : "string" }
-                            },
+                        created_at : {type : "string" },
+                        updated_at : {type : "string" }
                         },
                     },
+                },
+                daily_logtime : {
+                    type : "array", 
+                    items : {
+                        type : "object",
+                        properties : {
+                            id : {type : "integer"},
+                            user_id : {type : "integer"},
+                            day: {type : "string"},
+                            logtime_second : {type : "integer"},
+                        }
+                    }
+                }
                 },
             },
         },
@@ -118,4 +130,30 @@ export const deleteDataOpts = {
         }
     },
     handler : gdprController.deleteData
+}
+
+export const getHistoryOpts = {
+    schema : {
+        headers : {
+            type : "object",
+            properties : {
+                authorization : {type : "string"},
+            },
+            required : ["authorization"],
+        },
+        response : {
+            type : "array",
+            items : {
+                type : "object",
+                properties : {
+                    id : { type : "integer"},
+                    user_id : { type : "integer"},
+                    action : { type : "string"},
+                    created_at : { type : "string"},
+                    executed_at : { type : "string"},
+                }
+            }
+        }
+    },
+    handler : gdprController.getHistory
 }

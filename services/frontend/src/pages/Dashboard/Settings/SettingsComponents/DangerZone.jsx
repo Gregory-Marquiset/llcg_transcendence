@@ -10,7 +10,7 @@ export default function DangerZone () {
     const navigate = useNavigate();
     const handleAccountDeletion = async () => {
         try {
-            const response = await fetch ('/api/v1/gdpr/deleteme', {
+            const response = await fetch ('/api/v1/gdpr/me', {
                 method : "DELETE",
                 headers : {
                     "Authorization" : `Bearer ${accessToken}`,
@@ -31,7 +31,7 @@ export default function DangerZone () {
     }
     const handleDataDeletion = async () => {
         try {
-            const response = await fetch ('/api/v1/gdpr/deletedata', {
+            const response = await fetch ('/api/v1/gdpr/data', {
                 method : "DELETE",
                 headers : {
                     "Authorization" : `Bearer ${accessToken}`,
@@ -49,9 +49,9 @@ export default function DangerZone () {
         }
     }
     const [openSection, setOpenSection] = useState(null);
-      const handleSection = sectionName => {
-            setOpenSection(openSection === sectionName ? null : sectionName)
-        }
+    const handleSection = sectionName => {
+        setOpenSection(openSection === sectionName ? null : sectionName)
+    }
     return (
         <section onClick={() => handleSection('dangerZone')}>
             <LogTitle text="Danger zone" />

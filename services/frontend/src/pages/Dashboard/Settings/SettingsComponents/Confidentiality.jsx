@@ -9,8 +9,15 @@ export default function Confidentiality (){
     const accessToken = localStorage.getItem("access_token");
     const [displayGdpr, setDisplayGdpr] = useState(false);
     const handleSection = sectionName => {
-        if (!displayGdpr && (openSection === sectionName))
+        if (!displayGdpr && (openSection === sectionName)){
+            setOpenSection(false);
             return ;
+        }
+        else if (displayGdpr && (openSection === sectionName)){
+            setOpenSection(false);
+            setDisplayGdpr(false);
+            return ;
+        }
         setOpenSection(openSection === sectionName ? null : sectionName)
         if (openSection === null)
             setDisplayGdpr(false);
@@ -75,10 +82,11 @@ export default function Confidentiality (){
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
                 >
-                <button className="btn-setting" onClick={() => setDisplay(true)}>Consulter mes donnees</button>
+                <button className="btn-setting" onClick={(e) =>{e.stopPropagation(); setDisplay(true);}}>Consulter mes donnees</button>
                 <button className="btn-setting" onClick={exportUserData}>Exporter mes données</button>
                 <button className="btn-setting">Supprimer mes données</button>
                 {displayGdpr && <pre className="json-preview">
+                    <strong>JSON preview : </strong><br/>
                     {JSON.stringify(gdprUserData, null, 2)}
                 </pre>
                 }

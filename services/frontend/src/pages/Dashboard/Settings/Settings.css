@@ -85,3 +85,8 @@ section:hover{
   min-width: 100px;
   padding: 50px;
 }
+
+.json-preview{
+  text-align: start;
+  margin: 30px;
+}

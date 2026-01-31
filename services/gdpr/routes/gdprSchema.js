@@ -33,48 +33,48 @@ export const getMeOpts = {
 						upload_count: { type: "integer" },
 						created_at: { type: "string" },
 						updated_at: { type: "string" },
-						last_login: { type: "string" }
-					},
-                    todo_list : {
-                        type : "array",
-                        items : {
-                            type : "object",
-                            properties : {
-                                id : {type : "integer"},
-                                title : {type : "string" },
-                                description : {type : "string" },
-                                done : {type : "boolean"},
-                                deadline : {type : "string"},
-                                created_at : {type : "string"}
-                            }
+						last_login: { type: "string" },
                         }
                     },
-                    history : {
-                        type : "array",
-                        items : {
-                            type : "object",
-                            properties : {
-                                id : {type : "integer"},
-                                title : { type : "string" },
-                                description : {type : "string"},
-                                createdAt : {type : "string"}
-                            }
+                todo_list : {
+                    type : "array",
+                    items : {
+                        type : "object",
+                        properties : {
+                            id : {type : "integer"},
+                            title : {type : "string" },
+                            description : {type : "string" },
+                            done : {type : "boolean"},
+                            deadline : {type : "string"},
+                            created_at : {type : "string"}
                         }
-                    },
-                    friendships : {
-                        type : "array",
-                        items : {
-                            type : "object",
-                            properties : {
-                                id : {type : "integer"},
-                                username : {type : "string"},
-                                status : {
-                                    type : "string",
-                                    enum : ["pending", "accepted", "refused", "blocked", "removed"]
-                                },
-                                created_at : {type : "string" },
-                                updated_at : {type : "string" }
-                                },
+                    }
+                },
+                history : {
+                    type : "array",
+                    items : {
+                        type : "object",
+                        properties : {
+                            id : {type : "integer"},
+                            title : { type : "string" },
+                            description : {type : "string"},
+                            createdAt : {type : "string"}
+                        }
+                    }
+                },
+                friendships : {
+                    type : "array",
+                    items : {
+                        type : "object",
+                        properties : {
+                            id : {type : "integer"},
+                            username : {type : "string"},
+                            status : {
+                                type : "string",
+                                enum : ["pending", "accepted", "refused", "blocked", "removed"]
+                            },
+                            created_at : {type : "string" },
+                            updated_at : {type : "string" }
                             },
                         },
                     },

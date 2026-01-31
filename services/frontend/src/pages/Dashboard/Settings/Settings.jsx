@@ -3,7 +3,8 @@ import './Settings.css'
 import { LogTitle } from '../../../components'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Footer, Background, HeaderBar, LeftMenu } from '../../../components'
+import { Footer, Background, HeaderBar } from '../../../components'
+import { Confidentiality } from './SettingsComponents/Confidentialty'
 
 function Settings() {
   const [openSection, setOpenSection] = useState(null)
@@ -40,22 +41,7 @@ function Settings() {
                 )}
               </AnimatePresence>
             </section>
-            <section onClick={() => handleSection('confidentiality')}>
-              <LogTitle text="Confidentialité" />
-              <AnimatePresence>
-                {openSection === 'confidentiality' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="btn-setting">Supprimer mes données</div>
-                    <div className="btn-setting">Exporter mes données</div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </section>
+           <Confidentiality/>
             <section onClick={() => handleSection('notifications')}>
               <LogTitle text="Notifications" />
               <AnimatePresence>

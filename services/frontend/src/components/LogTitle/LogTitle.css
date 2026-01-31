@@ -1,5 +1,5 @@
 .log-title {
-  position: block;
+  /* position: block; */
   /* top: 0; */
   -webkit-text-fill-color: transparent;
   font-size: 30px;
@@ -9,5 +9,4 @@
   background: linear-gradient(to right, #eab2bb, #545454);
   -webkit-background-clip: text;
   background-clip: text;
-
 }
